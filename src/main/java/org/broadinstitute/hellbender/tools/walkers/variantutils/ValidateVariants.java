@@ -132,9 +132,10 @@ public final class ValidateVariants extends VariantWalker {
 
         static {
             final Set<ValidationType> cts = new LinkedHashSet<>(values().length - 1);
-            for (final ValidationType v : values())
+            for (final ValidationType v : values()) {
                 if (v != ALL)
                     cts.add(v);
+            }
             CONCRETE_TYPES = Collections.unmodifiableSet(cts);
         }
     }
@@ -166,8 +167,9 @@ public final class ValidateVariants extends VariantWalker {
 
     @Override
     public void apply(VariantContext vc, ReadsContext readsContext, ReferenceContext ref, FeatureContext featureContext) {
-        if ( DO_NOT_VALIDATE_FILTERED && vc.isFiltered() )
+        if ( DO_NOT_VALIDATE_FILTERED && vc.isFiltered() ) {
             return;
+        }
 
         // get the true reference allele
         final Allele reportedRefAllele = vc.getReference();
