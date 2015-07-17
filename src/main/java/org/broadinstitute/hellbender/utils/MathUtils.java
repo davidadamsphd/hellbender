@@ -7,6 +7,8 @@ import org.apache.commons.math3.special.Gamma;
 import org.broadinstitute.hellbender.exceptions.GATKException;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * MathUtils is a static class (no instantiation allowed!) with some useful math methods.
@@ -28,6 +30,21 @@ public final class MathUtils {
      * Private constructor.  No instantiating this class!
      */
     private MathUtils() {
+    }
+
+    public static int countOccurrences(final char c, final byte[] bytes) {
+        Utils.nonNull(bytes);
+        int count = 0;
+        for (int i = 0; i < bytes.length; i++) {
+            if (bytes[i] == c){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public static double rms(final Collection<Integer> list) {
+        return Math.sqrt(list.stream().mapToInt(i -> i * i).average().orElse(0.0));
     }
 
     /**
