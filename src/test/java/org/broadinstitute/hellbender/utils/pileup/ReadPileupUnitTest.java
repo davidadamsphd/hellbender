@@ -247,8 +247,6 @@ public final class ReadPileupUnitTest {
         Assert.assertTrue(empty.getStartSortedPileup().isEmpty());
         Assert.assertTrue(empty.getPileupForLane("fred") == null);
         Assert.assertTrue(empty.getMappingFilteredPileup(10).isEmpty());
-        Assert.assertTrue(empty.toFragments().getOverlappingPairs().isEmpty());
-        Assert.assertTrue(empty.toFragments().getSingletonReads().isEmpty());
         Assert.assertEquals("chr1 1 A  ", empty.getPileupString('A'));
     }
 
@@ -292,8 +290,6 @@ public final class ReadPileupUnitTest {
         Assert.assertEquals(pu.getStartSortedPileup().size(), 2, "getStartSortedPileup");
         Assert.assertTrue(pu.getPileupForLane("fred") == null);
         Assert.assertTrue(pu.getMappingFilteredPileup(10).isEmpty());
-        Assert.assertTrue(pu.toFragments().getOverlappingPairs().isEmpty());
-        Assert.assertEquals(pu.toFragments().getSingletonReads().stream().map(pe -> pe.getRead()).collect(Collectors.toList()), Arrays.asList(read1, read2), "getSingletonReads");
         Assert.assertEquals("chr1 1 A AC +5", pu.getPileupString('A'));
     }
 
@@ -338,8 +334,6 @@ public final class ReadPileupUnitTest {
         Assert.assertEquals(pu.getStartSortedPileup().size(), 2, "getStartSortedPileup");
         Assert.assertTrue(pu.getPileupForLane("fred") == null);
         Assert.assertTrue(pu.getMappingFilteredPileup(10).isEmpty());
-        Assert.assertTrue(pu.toFragments().getOverlappingPairs().isEmpty());
-        Assert.assertEquals(pu.toFragments().getSingletonReads().stream().map(pe -> pe.getRead()).collect(Collectors.toList()), Arrays.asList(read1, read2), "getSingletonReads");
         Assert.assertEquals("chr1 1 A AC +5", pu.getPileupString('A'));
     }
 }

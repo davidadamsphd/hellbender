@@ -1,40 +1,15 @@
-/*
-* Copyright (c) 2012 The Broad Institute
-* 
-* Permission is hereby granted, free of charge, to any person
-* obtaining a copy of this software and associated documentation
-* files (the "Software"), to deal in the Software without
-* restriction, including without limitation the rights to use,
-* copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the
-* Software is furnished to do so, subject to the following
-* conditions:
-* 
-* The above copyright notice and this permission notice shall be
-* included in all copies or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
-* THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
-
 package org.broadinstitute.hellbender.utils.genotyper;
 
-import org.broadinstitute.gatk.utils.collections.IndexedSet;
+import org.broadinstitute.hellbender.utils.collections.IndexedSet;
 
 import java.util.Collection;
 
 /**
- * Simple implementation of a sample-list using and indexed-set.
+ * Simple implementation of a sample-list using an indexed-set.
  *
  * @author Valentin Ruano-Rubio &lt;valentin@broadinstitute.org&gt;
  */
-public class IndexedSampleList implements SampleList {
+public final class IndexedSampleList implements SampleList {
 
     private final IndexedSet<String> samples;
 
@@ -80,17 +55,17 @@ public class IndexedSampleList implements SampleList {
     }
 
     @Override
-    public int sampleCount() {
+    public int numberOfSamples() {
         return samples.size();
     }
 
     @Override
-    public int sampleIndex(final String sample) {
+    public int indexOfSample(final String sample) {
         return samples.indexOf(sample);
     }
 
     @Override
-    public String sampleAt(int sampleIndex) {
+    public String getSample(final int sampleIndex) {
         return samples.get(sampleIndex);
     }
 }

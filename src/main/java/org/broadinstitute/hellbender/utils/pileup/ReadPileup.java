@@ -1,12 +1,10 @@
 package org.broadinstitute.hellbender.utils.pileup;
 
-import com.google.api.client.repackaged.com.google.common.annotations.VisibleForTesting;
+import com.google.common.annotations.VisibleForTesting;
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMReadGroupRecord;
 import htsjdk.samtools.util.Locatable;
 import org.broadinstitute.hellbender.exceptions.GATKException;
 import org.broadinstitute.hellbender.utils.BaseUtils;
-import org.broadinstitute.hellbender.utils.fragments.FragmentCollection;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.ReadUtils;
 
@@ -228,6 +226,14 @@ public final class ReadPileup implements Iterable<PileupElement> {
     }
 
     /**
+     * Returns the element at given index.
+     * @throws IndexOutOfBoundsException if the index is out of range
+     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     */
+    public PileupElement get(final int index){
+        return pileupElements.get(index);
+    }
+    /**
      * The number of elements in this pileup.
      */
     public int size() {
@@ -397,9 +403,4 @@ public final class ReadPileup implements Iterable<PileupElement> {
         sortedElements.addAll(pileupElements);
         return new ReadPileup(loc, new LinkedList<>(sortedElements));
     }
-
-    public FragmentCollection<PileupElement> toFragments() {
-        return FragmentCollection.create(this);
-    }
-
 }

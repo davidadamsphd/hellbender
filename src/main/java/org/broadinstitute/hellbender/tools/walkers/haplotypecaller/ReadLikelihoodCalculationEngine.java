@@ -1,6 +1,9 @@
 package org.broadinstitute.hellbender.tools.walkers.haplotypecaller;
 
+import org.broadinstitute.hellbender.utils.genotyper.ReadLikelihoods;
+import org.broadinstitute.hellbender.utils.genotyper.SampleList;
 import org.broadinstitute.hellbender.utils.haplotype.Haplotype;
+import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 import java.util.List;
 import java.util.Map;
@@ -36,13 +39,13 @@ public interface ReadLikelihoodCalculationEngine {
      * @param samples the list of targeted samples.
      * @param perSampleReadList the input read sets stratified per sample.
      *
-     * @throws NullPointerException if either parameter is {@code null}.
+     * @throws IllegalArgumentException if any parameter is {@code null}.
      *
      * @return never {@code null}, and with at least one entry for input sample (keys in {@code perSampleReadList}.
      *    The value maps can be potentially empty though.
      */
     public ReadLikelihoods<Haplotype> computeReadLikelihoods(AssemblyResultSet assemblyResultSet, SampleList samples,
-                                                             Map<String, List<GATKSAMRecord>> perSampleReadList);
+                                                             Map<String, List<GATKRead>> perSampleReadList);
 
     public void close();
 }

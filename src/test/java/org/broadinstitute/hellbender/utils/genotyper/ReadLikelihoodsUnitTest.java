@@ -1,66 +1,14 @@
-/*
-* By downloading the PROGRAM you agree to the following terms of use:
-* 
-* BROAD INSTITUTE
-* SOFTWARE LICENSE AGREEMENT
-* FOR ACADEMIC NON-COMMERCIAL RESEARCH PURPOSES ONLY
-* 
-* This Agreement is made between the Broad Institute, Inc. with a principal address at 415 Main Street, Cambridge, MA 02142 (“BROAD”) and the LICENSEE and is effective at the date the downloading is completed (“EFFECTIVE DATE”).
-* 
-* WHEREAS, LICENSEE desires to license the PROGRAM, as defined hereinafter, and BROAD wishes to have this PROGRAM utilized in the public interest, subject only to the royalty-free, nonexclusive, nontransferable license rights of the United States Government pursuant to 48 CFR 52.227-14; and
-* WHEREAS, LICENSEE desires to license the PROGRAM and BROAD desires to grant a license on the following terms and conditions.
-* NOW, THEREFORE, in consideration of the promises and covenants made herein, the parties hereto agree as follows:
-* 
-* 1. DEFINITIONS
-* 1.1 PROGRAM shall mean copyright in the object code and source code known as GATK3 and related documentation, if any, as they exist on the EFFECTIVE DATE and can be downloaded from http://www.broadinstitute.org/gatk on the EFFECTIVE DATE.
-* 
-* 2. LICENSE
-* 2.1 Grant. Subject to the terms of this Agreement, BROAD hereby grants to LICENSEE, solely for academic non-commercial research purposes, a non-exclusive, non-transferable license to: (a) download, execute and display the PROGRAM and (b) create bug fixes and modify the PROGRAM. LICENSEE hereby automatically grants to BROAD a non-exclusive, royalty-free, irrevocable license to any LICENSEE bug fixes or modifications to the PROGRAM with unlimited rights to sublicense and/or distribute.  LICENSEE agrees to provide any such modifications and bug fixes to BROAD promptly upon their creation.
-* The LICENSEE may apply the PROGRAM in a pipeline to data owned by users other than the LICENSEE and provide these users the results of the PROGRAM provided LICENSEE does so for academic non-commercial purposes only. For clarification purposes, academic sponsored research is not a commercial use under the terms of this Agreement.
-* 2.2 No Sublicensing or Additional Rights. LICENSEE shall not sublicense or distribute the PROGRAM, in whole or in part, without prior written permission from BROAD. LICENSEE shall ensure that all of its users agree to the terms of this Agreement. LICENSEE further agrees that it shall not put the PROGRAM on a network, server, or other similar technology that may be accessed by anyone other than the LICENSEE and its employees and users who have agreed to the terms of this agreement.
-* 2.3 License Limitations. Nothing in this Agreement shall be construed to confer any rights upon LICENSEE by implication, estoppel, or otherwise to any computer software, trademark, intellectual property, or patent rights of BROAD, or of any other entity, except as expressly granted herein. LICENSEE agrees that the PROGRAM, in whole or part, shall not be used for any commercial purpose, including without limitation, as the basis of a commercial software or hardware product or to provide services. LICENSEE further agrees that the PROGRAM shall not be copied or otherwise adapted in order to circumvent the need for obtaining a license for use of the PROGRAM.
-* 
-* 3. PHONE-HOME FEATURE
-* LICENSEE expressly acknowledges that the PROGRAM contains an embedded automatic reporting system (“PHONE-HOME”) which is enabled by default upon download. Unless LICENSEE requests disablement of PHONE-HOME, LICENSEE agrees that BROAD may collect limited information transmitted by PHONE-HOME regarding LICENSEE and its use of the PROGRAM.  Such information shall include LICENSEE’S user identification, version number of the PROGRAM and tools being run, mode of analysis employed, and any error reports generated during run-time.  Collection of such information is used by BROAD solely to monitor usage rates, fulfill reporting requirements to BROAD funding agencies, drive improvements to the PROGRAM, and facilitate adjustments to PROGRAM-related documentation.
-* 
-* 4. OWNERSHIP OF INTELLECTUAL PROPERTY
-* LICENSEE acknowledges that title to the PROGRAM shall remain with BROAD. The PROGRAM is marked with the following BROAD copyright notice and notice of attribution to contributors. LICENSEE shall retain such notice on all copies. LICENSEE agrees to include appropriate attribution if any results obtained from use of the PROGRAM are included in any publication.
-* Copyright 2012-2014 Broad Institute, Inc.
-* Notice of attribution: The GATK3 program was made available through the generosity of Medical and Population Genetics program at the Broad Institute, Inc.
-* LICENSEE shall not use any trademark or trade name of BROAD, or any variation, adaptation, or abbreviation, of such marks or trade names, or any names of officers, faculty, students, employees, or agents of BROAD except as states above for attribution purposes.
-* 
-* 5. INDEMNIFICATION
-* LICENSEE shall indemnify, defend, and hold harmless BROAD, and their respective officers, faculty, students, employees, associated investigators and agents, and their respective successors, heirs and assigns, (Indemnitees), against any liability, damage, loss, or expense (including reasonable attorneys fees and expenses) incurred by or imposed upon any of the Indemnitees in connection with any claims, suits, actions, demands or judgments arising out of any theory of liability (including, without limitation, actions in the form of tort, warranty, or strict liability and regardless of whether such action has any factual basis) pursuant to any right or license granted under this Agreement.
-* 
-* 6. NO REPRESENTATIONS OR WARRANTIES
-* THE PROGRAM IS DELIVERED AS IS. BROAD MAKES NO REPRESENTATIONS OR WARRANTIES OF ANY KIND CONCERNING THE PROGRAM OR THE COPYRIGHT, EXPRESS OR IMPLIED, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NONINFRINGEMENT, OR THE ABSENCE OF LATENT OR OTHER DEFECTS, WHETHER OR NOT DISCOVERABLE. BROAD EXTENDS NO WARRANTIES OF ANY KIND AS TO PROGRAM CONFORMITY WITH WHATEVER USER MANUALS OR OTHER LITERATURE MAY BE ISSUED FROM TIME TO TIME.
-* IN NO EVENT SHALL BROAD OR ITS RESPECTIVE DIRECTORS, OFFICERS, EMPLOYEES, AFFILIATED INVESTIGATORS AND AFFILIATES BE LIABLE FOR INCIDENTAL OR CONSEQUENTIAL DAMAGES OF ANY KIND, INCLUDING, WITHOUT LIMITATION, ECONOMIC DAMAGES OR INJURY TO PROPERTY AND LOST PROFITS, REGARDLESS OF WHETHER BROAD SHALL BE ADVISED, SHALL HAVE OTHER REASON TO KNOW, OR IN FACT SHALL KNOW OF THE POSSIBILITY OF THE FOREGOING.
-* 
-* 7. ASSIGNMENT
-* This Agreement is personal to LICENSEE and any rights or obligations assigned by LICENSEE without the prior written consent of BROAD shall be null and void.
-* 
-* 8. MISCELLANEOUS
-* 8.1 Export Control. LICENSEE gives assurance that it will comply with all United States export control laws and regulations controlling the export of the PROGRAM, including, without limitation, all Export Administration Regulations of the United States Department of Commerce. Among other things, these laws and regulations prohibit, or require a license for, the export of certain types of software to specified countries.
-* 8.2 Termination. LICENSEE shall have the right to terminate this Agreement for any reason upon prior written notice to BROAD. If LICENSEE breaches any provision hereunder, and fails to cure such breach within thirty (30) days, BROAD may terminate this Agreement immediately. Upon termination, LICENSEE shall provide BROAD with written assurance that the original and all copies of the PROGRAM have been destroyed, except that, upon prior written authorization from BROAD, LICENSEE may retain a copy for archive purposes.
-* 8.3 Survival. The following provisions shall survive the expiration or termination of this Agreement: Articles 1, 3, 4, 5 and Sections 2.2, 2.3, 7.3, and 7.4.
-* 8.4 Notice. Any notices under this Agreement shall be in writing, shall specifically refer to this Agreement, and shall be sent by hand, recognized national overnight courier, confirmed facsimile transmission, confirmed electronic mail, or registered or certified mail, postage prepaid, return receipt requested. All notices under this Agreement shall be deemed effective upon receipt.
-* 8.5 Amendment and Waiver; Entire Agreement. This Agreement may be amended, supplemented, or otherwise modified only by means of a written instrument signed by all parties. Any waiver of any rights or failure to act in a specific instance shall relate only to such instance and shall not be construed as an agreement to waive any rights or fail to act in any other instance, whether or not similar. This Agreement constitutes the entire agreement among the parties with respect to its subject matter and supersedes prior agreements or understandings between the parties relating to its subject matter.
-* 8.6 Binding Effect; Headings. This Agreement shall be binding upon and inure to the benefit of the parties and their respective permitted successors and assigns. All headings are for convenience only and shall not affect the meaning of any provision of this Agreement.
-* 8.7 Governing Law. This Agreement shall be construed, governed, interpreted and applied in accordance with the internal laws of the Commonwealth of Massachusetts, U.S.A., without regard to conflict of laws principles.
-*/
-
-package org.broadinstitute.gatk.tools.walkers.genotyper;
+package org.broadinstitute.hellbender.utils.genotyper;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.variant.variantcontext.Allele;
-import org.broadinstitute.gatk.utils.genotyper.*;
-import org.broadinstitute.gatk.utils.GenomeLoc;
-import org.broadinstitute.gatk.utils.GenomeLocParser;
-import org.broadinstitute.gatk.utils.MathUtils;
-import org.broadinstitute.gatk.utils.Utils;
-import org.broadinstitute.gatk.utils.sam.ArtificialSAMUtils;
-import org.broadinstitute.gatk.utils.sam.GATKSAMRecord;
-import org.broadinstitute.gatk.utils.variant.GATKVCFConstants;
+import org.broadinstitute.hellbender.utils.GenomeLoc;
+import org.broadinstitute.hellbender.utils.GenomeLocParser;
+import org.broadinstitute.hellbender.utils.MathUtils;
+import org.broadinstitute.hellbender.utils.Utils;
+import org.broadinstitute.hellbender.utils.read.ArtificialReadUtils;
+import org.broadinstitute.hellbender.utils.read.GATKRead;
+import org.broadinstitute.hellbender.utils.variant.GATKVCFConstants;
 import org.testng.Assert;
 import org.testng.SkipException;
 import org.testng.annotations.DataProvider;
@@ -73,18 +21,17 @@ import java.util.*;
  *
  * @author Valentin Ruano-Rubio &lt;valentin@broadinstitute.org&gt;
  */
-public class ReadLikelihoodsUnitTest
-{
+public final class ReadLikelihoodsUnitTest {
     private static final double EPSILON = 1e-6;
     private static final int ODD_READ_START = 101;
     private static final int EVEN_READ_START = 1;
 
     @Test(dataProvider = "dataSets")
-    public void testInstantiationAndQuery(final String[] samples, final Allele[] alleles, final Map<String,List<GATKSAMRecord>> reads) {
+    public void testInstantiationAndQuery(final String[] samples, final Allele[] alleles, final Map<String,List<GATKRead>> reads) {
         final ReadLikelihoods<Allele> result = new ReadLikelihoods<>(new IndexedSampleList(samples), new IndexedAlleleList<>(alleles), reads);
 
-        Assert.assertEquals(result.sampleCount(), samples.length);
-        Assert.assertEquals(result.alleleCount(), alleles.length);
+        Assert.assertEquals(result.numberOfSamples(), samples.length);
+        Assert.assertEquals(result.numberOfAlleles(), alleles.length);
 
 
         testSampleQueries(samples, reads, result);
@@ -93,7 +40,7 @@ public class ReadLikelihoodsUnitTest
     }
 
     @Test(dataProvider = "dataSets")
-    public void testLikelihoodFillingAndQuery(final String[] samples, final Allele[] alleles, final Map<String,List<GATKSAMRecord>> reads) {
+    public void testLikelihoodFillingAndQuery(final String[] samples, final Allele[] alleles, final Map<String,List<GATKRead>> reads) {
         final ReadLikelihoods<Allele> result = new ReadLikelihoods<>(new IndexedSampleList(samples), new IndexedAlleleList<>(alleles), reads);
         final double[][][] likelihoods = fillWithRandomLikelihoods(samples, alleles, result);
         testLikelihoodMatrixQueries(samples, result, likelihoods);
@@ -103,7 +50,7 @@ public class ReadLikelihoodsUnitTest
         final Random rnd = Utils.getRandomGenerator();
         final double[][][] likelihoods = new double[samples.length][alleles.length][];
         for (int s = 0; s < likelihoods.length; s++) {
-            final ReadLikelihoods.Matrix<Allele> sampleLikelihoods = result.sampleMatrix(s);
+            final LikelihoodMatrix<Allele> sampleLikelihoods = result.sampleMatrix(s);
             for (int a = 0; a < likelihoods[s].length; a++) {
                 likelihoods[s][a] = new double[result.sampleReadCount(s)];
                 for (int r = 0; r < likelihoods[s][a].length; r++)
@@ -114,13 +61,13 @@ public class ReadLikelihoodsUnitTest
     }
 
     @Test(dataProvider = "dataSets")
-    public void testBestAlleles(final String[] samples, final Allele[] alleles, final Map<String,List<GATKSAMRecord>> reads) {
+    public void testBestAlleles(final String[] samples, final Allele[] alleles, final Map<String,List<GATKRead>> reads) {
         final ReadLikelihoods<Allele> original = new ReadLikelihoods<>(new IndexedSampleList(samples), new IndexedAlleleList<>(alleles), reads);
         fillWithRandomLikelihoods(samples,alleles,original);
         final int alleleCount = alleles.length;
         for (int s = 0; s < samples.length; s++) {
             final int sampleReadCount = original.sampleReadCount(s);
-            final ReadLikelihoods.Matrix<Allele> sampleMatrix = original.sampleMatrix(s);
+            final LikelihoodMatrix<Allele> sampleMatrix = original.sampleMatrix(s);
             final double[] bestLkArray = new double[sampleReadCount];
             final int[] bestIndexArray = new int[sampleReadCount];
             final double[] confidenceArray = new double[sampleReadCount];
@@ -154,17 +101,17 @@ public class ReadLikelihoodsUnitTest
     }
 
     @Test(dataProvider = "dataSets")
-    public void testBestAlleleMap(final String[] samples, final Allele[] alleles, final Map<String,List<GATKSAMRecord>> reads) {
+    public void testBestAlleleMap(final String[] samples, final Allele[] alleles, final Map<String,List<GATKRead>> reads) {
         final ReadLikelihoods<Allele> original = new ReadLikelihoods<>(new IndexedSampleList(samples), new IndexedAlleleList<>(alleles), reads);
         fillWithRandomLikelihoods(samples,alleles,original);
-        final Map<Allele,List<GATKSAMRecord>> expected = new HashMap<>(alleles.length);
+        final Map<Allele,List<GATKRead>> expected = new HashMap<>(alleles.length);
         for (final Allele allele : alleles)
-            expected.put(allele,new ArrayList<GATKSAMRecord>());
+            expected.put(allele,new ArrayList<>());
 
         final int alleleCount = alleles.length;
         for (int s = 0; s < samples.length; s++) {
             final int sampleReadCount = original.sampleReadCount(s);
-            final ReadLikelihoods.Matrix<Allele> sampleMatrix = original.sampleMatrix(s);
+            final LikelihoodMatrix<Allele> sampleMatrix = original.sampleMatrix(s);
             for (int r = 0; r < sampleReadCount; r++) {
                 int bestAlleleIndex = -1;
                 double bestAlleleLk = Double.NEGATIVE_INFINITY;
@@ -180,24 +127,24 @@ public class ReadLikelihoodsUnitTest
                     }
                 }
                 if ((bestAlleleLk - secondBestAlleleLk) > ReadLikelihoods.BestAllele.INFORMATIVE_THRESHOLD)
-                    expected.get(alleles[bestAlleleIndex]).add(sampleMatrix.readAt(r));
+                    expected.get(alleles[bestAlleleIndex]).add(sampleMatrix.getRead(r));
             }
         }
 
-        final Map<Allele,List<GATKSAMRecord>> actual = original.readsByBestAlleleMap();
+        final Map<Allele,List<GATKRead>> actual = original.readsByBestAlleleMap();
 
         Assert.assertEquals(actual.size(),alleles.length);
         for (final Allele allele : alleles) {
-            final List<GATKSAMRecord> expectedList = expected.get(allele);
-            final List<GATKSAMRecord> actualList = actual.get(allele);
-            final Set<GATKSAMRecord> expectedSet = new HashSet<>(expectedList);
-            final Set<GATKSAMRecord> actualSet = new HashSet<>(actualList);
+            final List<GATKRead> expectedList = expected.get(allele);
+            final List<GATKRead> actualList = actual.get(allele);
+            final Set<GATKRead> expectedSet = new HashSet<>(expectedList);
+            final Set<GATKRead> actualSet = new HashSet<>(actualList);
             Assert.assertEquals(actualSet,expectedSet);
         }
     }
 
     @Test(dataProvider = "dataSets")
-    public void testFilterPoorlyModeledReads(final String[] samples, final Allele[] alleles, final Map<String,List<GATKSAMRecord>> reads) {
+    public void testFilterPoorlyModeledReads(final String[] samples, final Allele[] alleles, final Map<String,List<GATKRead>> reads) {
         final ReadLikelihoods<Allele> original = new ReadLikelihoods<>(new IndexedSampleList(samples), new IndexedAlleleList<>(alleles), reads);
 
         for (int s = 0; s < samples.length; s++) {
@@ -209,15 +156,15 @@ public class ReadLikelihoodsUnitTest
             }
         }
 
-        final ReadLikelihoods<Allele> result = original.clone();
+        final ReadLikelihoods<Allele> result = original.copy();
         result.filterPoorlyModeledReads(2.0);
 
         for (int s = 0; s < samples.length; s++) {
             final int oldSampleReadCount = original.sampleReadCount(s);
             final int newSampleReadCount = result.sampleReadCount(s);
             Assert.assertEquals(newSampleReadCount,(oldSampleReadCount + 1) / 2);
-            final ReadLikelihoods.Matrix<Allele> newSampleMatrix = result.sampleMatrix(s);
-            final ReadLikelihoods.Matrix<Allele> oldSampleMatrix = original.sampleMatrix(s);
+            final LikelihoodMatrix<Allele> newSampleMatrix = result.sampleMatrix(s);
+            final LikelihoodMatrix<Allele> oldSampleMatrix = original.sampleMatrix(s);
             for (int r = 0 ; r < newSampleReadCount; r++) {
                 Assert.assertEquals(original.readIndex(s, result.sampleReads(s).get(r)), r * 2);
                 for (int a = 0; a < alleles.length; a++) {
@@ -227,47 +174,28 @@ public class ReadLikelihoodsUnitTest
         }
     }
 
-    @Test(dataProvider = "dataSets")
-    public void testFilterReadsToOverlap(final String[] samples, final Allele[] alleles, final Map<String,List<GATKSAMRecord>> reads) {
-        final ReadLikelihoods<Allele> original = new ReadLikelihoods<>(new IndexedSampleList(samples), new IndexedAlleleList<>(alleles), reads);
-        final GenomeLoc evenReadOverlap = locParser.createGenomeLoc(SAM_HEADER.getSequenceDictionary().getSequences().get(0).getSequenceName(),EVEN_READ_START ,EVEN_READ_START );
-        fillWithRandomLikelihoods(samples,alleles,original);
-        final ReadLikelihoods<Allele> result = original.clone();
-        result.filterToOnlyOverlappingUnclippedReads(evenReadOverlap);
-        final double[][][] newLikelihoods = new double[samples.length][alleles.length][];
-        for (int s = 0; s < samples.length ; s++)
-            for (int a = 0; a < alleles.length; a++) {
-                newLikelihoods[s][a] = new double[(original.sampleReadCount(s) + 1) / 2];
-                final ReadLikelihoods.Matrix<Allele> sampleMatrix = original.sampleMatrix(s);
-                for (int r = 0; r < newLikelihoods[s][a].length; r++) {
-                    Assert.assertEquals(result.readIndex(s,sampleMatrix.readAt(r << 1)),r);
-                    newLikelihoods[s][a][r] = sampleMatrix.get(a, r << 1);
-                }
-            }
-        testLikelihoodMatrixQueries(samples,result,newLikelihoods);
-    }
 
     @Test(dataProvider = "marginalizationDataSets")
-    public void testMarginalizationWithOverlap(final String[] samples, final Allele[] alleles, final Map<String,List<GATKSAMRecord>> reads, final Map<Allele,List<Allele>> newToOldAlleleMapping) {
+    public void testMarginalizationWithOverlap(final String[] samples, final Allele[] alleles, final Map<String,List<GATKRead>> reads, final Map<Allele,List<Allele>> newToOldAlleleMapping) {
         final ReadLikelihoods<Allele> original = new ReadLikelihoods<>(new IndexedSampleList(samples), new IndexedAlleleList<>(alleles), reads);
         final GenomeLoc evenReadOverlap = locParser.createGenomeLoc(SAM_HEADER.getSequenceDictionary().getSequences().get(0).getSequenceName(),EVEN_READ_START ,EVEN_READ_START );
         fillWithRandomLikelihoods(samples, alleles, original);
         final ReadLikelihoods<Allele> marginalized = original.marginalize(newToOldAlleleMapping,evenReadOverlap);
         Assert.assertNotNull(marginalized);
-        Assert.assertEquals(newToOldAlleleMapping.size(),marginalized.alleleCount());
-        for (int a = 0; a < marginalized.alleleCount(); a++) {
-            final List<Allele> oldAlleles = newToOldAlleleMapping.get(marginalized.alleleAt(a));
+        Assert.assertEquals(newToOldAlleleMapping.size(),marginalized.numberOfAlleles());
+        for (int a = 0; a < marginalized.numberOfAlleles(); a++) {
+            final List<Allele> oldAlleles = newToOldAlleleMapping.get(marginalized.getAllele(a));
             Assert.assertNotNull(oldAlleles);
             for (int s = 0; s < samples.length; s++) {
-                final ReadLikelihoods.Matrix<Allele> oldSmapleLikelihoods = original.sampleMatrix(s);
-                final ReadLikelihoods.Matrix<Allele> sampleLikelihoods = marginalized.sampleMatrix(s);
-                final int sampleReadCount = sampleLikelihoods.readCount();
-                final int oldSampleReadCount = oldSmapleLikelihoods.readCount();
+                final LikelihoodMatrix<Allele> oldSmapleLikelihoods = original.sampleMatrix(s);
+                final LikelihoodMatrix<Allele> sampleLikelihoods = marginalized.sampleMatrix(s);
+                final int sampleReadCount = sampleLikelihoods.numberOfReads();
+                final int oldSampleReadCount = oldSmapleLikelihoods.numberOfReads();
                 Assert.assertEquals(sampleReadCount,(oldSampleReadCount + 1) / 2);
                 for (int r = 0; r < sampleReadCount; r++) {
                     double oldBestLk = Double.NEGATIVE_INFINITY;
                     for (final Allele oldAllele : oldAlleles) {
-                        oldBestLk = Math.max(oldSmapleLikelihoods.get(original.alleleIndex(oldAllele),r << 1), oldBestLk);
+                        oldBestLk = Math.max(oldSmapleLikelihoods.get(original.indexOfAllele(oldAllele),r << 1), oldBestLk);
                     }
                     Assert.assertEquals(sampleLikelihoods.get(a,r),oldBestLk);
                 }
@@ -276,25 +204,25 @@ public class ReadLikelihoodsUnitTest
     }
 
     @Test(dataProvider = "marginalizationDataSets")
-    public void testMarginalization(final String[] samples, final Allele[] alleles, final Map<String,List<GATKSAMRecord>> reads, final Map<Allele,List<Allele>> newToOldAlleleMapping) {
+    public void testMarginalization(final String[] samples, final Allele[] alleles, final Map<String,List<GATKRead>> reads, final Map<Allele,List<Allele>> newToOldAlleleMapping) {
         final ReadLikelihoods<Allele> original = new ReadLikelihoods<>(new IndexedSampleList(samples), new IndexedAlleleList<>(alleles), reads);
         fillWithRandomLikelihoods(samples, alleles, original);
         final ReadLikelihoods<Allele> marginalized = original.marginalize(newToOldAlleleMapping);
         Assert.assertNotNull(marginalized);
-        Assert.assertEquals(newToOldAlleleMapping.size(),marginalized.alleleCount());
-        for (int a = 0; a < marginalized.alleleCount(); a++) {
-            final List<Allele> oldAlleles = newToOldAlleleMapping.get(marginalized.alleleAt(a));
+        Assert.assertEquals(newToOldAlleleMapping.size(),marginalized.numberOfAlleles());
+        for (int a = 0; a < marginalized.numberOfAlleles(); a++) {
+            final List<Allele> oldAlleles = newToOldAlleleMapping.get(marginalized.getAllele(a));
             Assert.assertNotNull(oldAlleles);
             for (int s = 0; s < samples.length; s++) {
-                final ReadLikelihoods.Matrix<Allele> oldSmapleLikelihoods = original.sampleMatrix(s);
-                final ReadLikelihoods.Matrix<Allele> sampleLikelihoods = marginalized.sampleMatrix(s);
-                final int sampleReadCount = sampleLikelihoods.readCount();
-                final int oldSampleReadCount = oldSmapleLikelihoods.readCount();
+                final LikelihoodMatrix<Allele> oldSmapleLikelihoods = original.sampleMatrix(s);
+                final LikelihoodMatrix<Allele> sampleLikelihoods = marginalized.sampleMatrix(s);
+                final int sampleReadCount = sampleLikelihoods.numberOfReads();
+                final int oldSampleReadCount = oldSmapleLikelihoods.numberOfReads();
                 Assert.assertEquals(oldSampleReadCount,sampleReadCount);
                 for (int r = 0; r < sampleReadCount; r++) {
                     double oldBestLk = Double.NEGATIVE_INFINITY;
                     for (final Allele oldAllele : oldAlleles) {
-                        oldBestLk = Math.max(oldSmapleLikelihoods.get(original.alleleIndex(oldAllele),r), oldBestLk);
+                        oldBestLk = Math.max(oldSmapleLikelihoods.get(original.indexOfAllele(oldAllele),r), oldBestLk);
                     }
                     Assert.assertEquals(sampleLikelihoods.get(a,r),oldBestLk);
                 }
@@ -303,10 +231,10 @@ public class ReadLikelihoodsUnitTest
     }
 
     @Test(dataProvider = "dataSets")
-    public void testNormalizeBestToZero(final String[] samples, final Allele[] alleles, final Map<String,List<GATKSAMRecord>> reads) {
+    public void testNormalizeBestToZero(final String[] samples, final Allele[] alleles, final Map<String,List<GATKRead>> reads) {
         final ReadLikelihoods<Allele> original = new ReadLikelihoods<>(new IndexedSampleList(samples), new IndexedAlleleList<>(alleles), reads);
         final double[][][] originalLikelihoods = fillWithRandomLikelihoods(samples,alleles,original);
-        final ReadLikelihoods<Allele> result= original.clone();
+        final ReadLikelihoods<Allele> result= original.copy();
         result.normalizeLikelihoods(true, Double.NEGATIVE_INFINITY);
         testAlleleQueries(alleles,result);
         final int alleleCount = alleles.length;
@@ -329,10 +257,10 @@ public class ReadLikelihoodsUnitTest
     }
 
     @Test(dataProvider = "dataSets")
-    public void testNormalizeCapWorstLK(final String[] samples, final Allele[] alleles, final Map<String,List<GATKSAMRecord>> reads) {
+    public void testNormalizeCapWorstLK(final String[] samples, final Allele[] alleles, final Map<String,List<GATKRead>> reads) {
         final ReadLikelihoods<Allele> original = new ReadLikelihoods<>(new IndexedSampleList(samples), new IndexedAlleleList<>(alleles), reads);
         final double[][][] originalLikelihoods = fillWithRandomLikelihoods(samples,alleles,original);
-        final ReadLikelihoods<Allele> result= original.clone();
+        final ReadLikelihoods<Allele> result= original.copy();
         result.normalizeLikelihoods(false, - 0.001);
         testAlleleQueries(alleles,result);
         final int alleleCount = alleles.length;
@@ -362,10 +290,10 @@ public class ReadLikelihoodsUnitTest
     }
 
     @Test(dataProvider = "dataSets")
-    public void testNormalizeCapWorstLKAndBestToZero(final String[] samples, final Allele[] alleles, final Map<String,List<GATKSAMRecord>> reads) {
+    public void testNormalizeCapWorstLKAndBestToZero(final String[] samples, final Allele[] alleles, final Map<String,List<GATKRead>> reads) {
         final ReadLikelihoods<Allele> original = new ReadLikelihoods<>(new IndexedSampleList(samples), new IndexedAlleleList<>(alleles), reads);
         final double[][][] originalLikelihoods = fillWithRandomLikelihoods(samples,alleles,original);
-        final ReadLikelihoods<Allele> result= original.clone();
+        final ReadLikelihoods<Allele> result= original.copy();
         result.normalizeLikelihoods(true, - 0.001);
         testAlleleQueries(alleles,result);
         final int alleleCount = alleles.length;
@@ -398,17 +326,17 @@ public class ReadLikelihoodsUnitTest
 
 
     @Test(dataProvider = "dataSets")
-    public void testAddMissingAlleles(final String[] samples, final Allele[] alleles, final Map<String,List<GATKSAMRecord>> reads) {
+    public void testAddMissingAlleles(final String[] samples, final Allele[] alleles, final Map<String,List<GATKRead>> reads) {
         final ReadLikelihoods<Allele> original = new ReadLikelihoods<>(new IndexedSampleList(samples), new IndexedAlleleList<>(alleles), reads);
         final double[][][] originalLikelihoods = fillWithRandomLikelihoods(samples,alleles,original);
-        final ReadLikelihoods<Allele> result = original.clone();
+        final ReadLikelihoods<Allele> result = original.copy();
 
         // If all the alleles pass are present in the read-likelihoods collection there is no change.
         result.addMissingAlleles(result.alleles(),Double.NEGATIVE_INFINITY);
         testLikelihoodMatrixQueries(samples,result,originalLikelihoods);
 
         // If the allele list passed is empty there is no effect.
-        result.addMissingAlleles(Collections.EMPTY_LIST,Double.NEGATIVE_INFINITY);
+        result.addMissingAlleles(Collections.emptyList(),Double.NEGATIVE_INFINITY);
         testLikelihoodMatrixQueries(samples,result,originalLikelihoods);
 
         final Allele newOne;
@@ -417,13 +345,13 @@ public class ReadLikelihoodsUnitTest
 
         // We add a single missing.
         result.addMissingAlleles(Arrays.asList(newOne = Allele.create("ACCCCCAAAATTTAAAGGG".getBytes(),false)),-12345.6);
-        Assert.assertEquals(result.alleleCount(), original.alleleCount() + 1);
+        Assert.assertEquals(result.numberOfAlleles(), original.numberOfAlleles() + 1);
 
         // We add too more amongst exisisting alleles:
-        result.addMissingAlleles(Arrays.asList(newTwo = Allele.create("ATATATTATATTAATATT".getBytes(), false),result.alleleAt(1),
-                result.alleleAt(0),newThree = Allele.create("TGTGTGTATTG".getBytes(),false),Allele.create("ACCCCCAAAATTTAAAGGG".getBytes(),false)),-6.54321);
+        result.addMissingAlleles(Arrays.asList(newTwo = Allele.create("ATATATTATATTAATATT".getBytes(), false),result.getAllele(1),
+                result.getAllele(0),newThree = Allele.create("TGTGTGTATTG".getBytes(),false),Allele.create("ACCCCCAAAATTTAAAGGG".getBytes(),false)),-6.54321);
 
-        Assert.assertEquals(original.alleleCount()+3,result.alleleCount());
+        Assert.assertEquals(original.numberOfAlleles()+3,result.numberOfAlleles());
 
         final List<Allele> expectedAlleles = new ArrayList<>(original.alleles());
         expectedAlleles.add(newOne); expectedAlleles.add(newTwo); expectedAlleles.add(newThree);
@@ -447,13 +375,13 @@ public class ReadLikelihoodsUnitTest
 
 
     @Test(dataProvider = "dataSets")
-    public void testAddNonRefAllele(final String[] samples, final Allele[] alleles, final Map<String,List<GATKSAMRecord>> reads) {
+    public void testAddNonRefAllele(final String[] samples, final Allele[] alleles, final Map<String,List<GATKRead>> reads) {
         final ReadLikelihoods<Allele> original = new ReadLikelihoods<>(new IndexedSampleList(samples), new IndexedAlleleList<>(alleles), reads);
         final double[][][] originalLikelihoods = fillWithRandomLikelihoods(samples,alleles,original);
-        final ReadLikelihoods<Allele> result = original.clone();
+        final ReadLikelihoods<Allele> result = original.copy();
         result.addNonReferenceAllele(GATKVCFConstants.NON_REF_SYMBOLIC_ALLELE);
-        Assert.assertEquals(result.alleleCount(),original.alleleCount() + 1);
-        Assert.assertEquals(result.alleleIndex(GATKVCFConstants.NON_REF_SYMBOLIC_ALLELE),result.alleleCount() - 1);
+        Assert.assertEquals(result.numberOfAlleles(),original.numberOfAlleles() + 1);
+        Assert.assertEquals(result.indexOfAllele(GATKVCFConstants.NON_REF_SYMBOLIC_ALLELE),result.numberOfAlleles() - 1);
         final double[][][] newLikelihoods = new double[originalLikelihoods.length][][];
         for (int s = 0; s < samples.length; s++) {
             newLikelihoods[s] = Arrays.copyOf(originalLikelihoods[s],originalLikelihoods[s].length + 1);
@@ -481,10 +409,10 @@ public class ReadLikelihoodsUnitTest
 
     private void testLikelihoodMatrixQueries(String[] samples, ReadLikelihoods<Allele> result, final double[][][] likelihoods) {
         for (final String sample : samples) {
-            final int sampleIndex = result.sampleIndex(sample);
+            final int sampleIndex = result.indexOfSample(sample);
             final int sampleReadCount = result.sampleReadCount(sampleIndex);
-            final int alleleCount = result.alleleCount();
-            Assert.assertEquals(result.alleleCount(), alleleCount);
+            final int alleleCount = result.numberOfAlleles();
+            Assert.assertEquals(result.numberOfAlleles(), alleleCount);
             for (int a = 0; a < alleleCount; a++) {
                 Assert.assertEquals(result.sampleReadCount(sampleIndex),sampleReadCount);
                 for (int r = 0; r < sampleReadCount; r++)
@@ -497,7 +425,7 @@ public class ReadLikelihoodsUnitTest
     private void testAlleleQueries(Allele[] alleles, ReadLikelihoods<Allele> result) {
         final Set<Integer> alleleIndices = new HashSet<>();
         for (final Allele allele : alleles) {
-            final int alleleIndex = result.alleleIndex(allele);
+            final int alleleIndex = result.indexOfAllele(allele);
             Assert.assertTrue(alleleIndex >= 0);
             Assert.assertFalse(alleleIndices.contains(alleleIndex));
             alleleIndices.add(alleleIndex);
@@ -505,18 +433,18 @@ public class ReadLikelihoodsUnitTest
         }
     }
 
-    private void testSampleQueries(String[] samples, Map<String, List<GATKSAMRecord>> reads, ReadLikelihoods<Allele> result) {
+    private void testSampleQueries(String[] samples, Map<String, List<GATKRead>> reads, ReadLikelihoods<Allele> result) {
         final Set<Integer> sampleIds = new HashSet<>(samples.length);
         for (final String sample : samples) {
-            final int sampleIndex = result.sampleIndex(sample);
+            final int sampleIndex = result.indexOfSample(sample);
             Assert.assertTrue(sampleIndex >= 0);
             Assert.assertFalse(sampleIds.contains(sampleIndex));
             sampleIds.add(sampleIndex);
 
-            final List<GATKSAMRecord> sampleReads = result.sampleReads(sampleIndex);
-            final Set<GATKSAMRecord> sampleReadsSet = new HashSet<>(sampleReads);
-            final List<GATKSAMRecord> expectedSampleReadArray = reads.get(sample);
-            final Set<GATKSAMRecord> expectedSampleReadsSet = new HashSet<>(expectedSampleReadArray);
+            final List<GATKRead> sampleReads = result.sampleReads(sampleIndex);
+            final Set<GATKRead> sampleReadsSet = new HashSet<>(sampleReads);
+            final List<GATKRead> expectedSampleReadArray = reads.get(sample);
+            final Set<GATKRead> expectedSampleReadsSet = new HashSet<>(expectedSampleReadArray);
             Assert.assertEquals(sampleReadsSet,expectedSampleReadsSet);
 
             final int sampleReadCount = sampleReads.size();
@@ -567,7 +495,7 @@ public class ReadLikelihoodsUnitTest
     private Map<Allele,List<Allele>> randomAlleleMap(final Allele[] fromAlleles, final Allele[] toAlleles) {
         final Map<Allele,List<Allele>> result = new HashMap<>(toAlleles.length);
         for (final Allele toAllele : toAlleles )
-            result.put(toAllele,new ArrayList<Allele>(fromAlleles.length));
+            result.put(toAllele,new ArrayList<>(fromAlleles.length));
         final ArrayList<Allele> remaining = new ArrayList<>(Arrays.asList(fromAlleles));
         int nextToIndex = 0;
         final Random rnd = Utils.getRandomGenerator();
@@ -598,15 +526,15 @@ public class ReadLikelihoodsUnitTest
         }
     }
 
-    private Map<String,List<GATKSAMRecord>> dataSetReads(final String[] samples,
+    private Map<String,List<GATKRead>> dataSetReads(final String[] samples,
                                                          final Random rnd) {
-        final Map<String,List<GATKSAMRecord>> result = new HashMap<>(samples.length);
+        final Map<String,List<GATKRead>> result = new HashMap<>(samples.length);
         for (final String sample : samples) {
             final int readCount = rnd.nextInt(100);
-            final List<GATKSAMRecord> reads = new ArrayList<>(readCount);
+            final List<GATKRead> reads = new ArrayList<>(readCount);
             for (int r = 0; r < readCount; r++) {
                 final int alignmentStart = (r & 1) == 0 ? EVEN_READ_START : ODD_READ_START;
-                reads.add(ArtificialSAMUtils.createArtificialRead(SAM_HEADER,
+                reads.add(ArtificialReadUtils.createArtificialRead(SAM_HEADER,
                         "RRR" + sample + "00" + r, 0, alignmentStart ,"AAAAA".getBytes(), new byte[] {30,30,30,30,30}, "5M"));
             }
             result.put(sample,reads);
@@ -619,18 +547,18 @@ public class ReadLikelihoodsUnitTest
         final SampleList sampleList = sampleList(readCounts);
 
         final AlleleList<Allele> alleleList = alleleList(alleleCount,hasReference);
-        final Map<String,List<GATKSAMRecord>> sampleToReads = ReadLikelihoodsUnitTester.sampleToReads(sampleList, readCounts);
+        final Map<String,List<GATKRead>> sampleToReads = ReadLikelihoodsUnitTester.sampleToReads(sampleList, readCounts);
         final ReadLikelihoods<Allele> subject = new ReadLikelihoods<>(sampleList,alleleList,sampleToReads);
 
-        AlleleListUnitTester.assertAlleleList(subject, AlleleListUtils.asList(alleleList));
-        SampleListUnitTester.assertSampleList(subject,SampleListUtils.asList(sampleList));
+        AlleleListUnitTester.assertAlleleList(subject, alleleList.asListOfAlleles());
+        SampleListUnitTester.assertSampleList(subject, sampleList.asListOfSamples());
 
         if (hasReference) {
-            final int referenceIndex = AlleleListUtils.indexOfReference(alleleList);
+            final int referenceIndex = alleleList.indexOfReference();
             Assert.assertTrue(referenceIndex >= 0);
-            Assert.assertEquals(AlleleListUtils.indexOfReference(alleleList),referenceIndex);
+            Assert.assertEquals(alleleList.indexOfReference(),referenceIndex);
         } else {
-            Assert.assertEquals(AlleleListUtils.indexOfReference(subject), -1);
+            Assert.assertEquals(subject.indexOfReference(), -1);
         }
 
         testLikelihoodMatrixQueries(alleleList, sampleList, sampleToReads, subject);
@@ -643,7 +571,7 @@ public class ReadLikelihoodsUnitTest
         final SampleList sampleList = sampleList(readCounts);
 
         final AlleleList<Allele> alleleList = alleleList(alleleCount,hasReference);
-        final Map<String,List<GATKSAMRecord>> sampleToReads = ReadLikelihoodsUnitTester.sampleToReads(sampleList,readCounts);
+        final Map<String,List<GATKRead>> sampleToReads = ReadLikelihoodsUnitTester.sampleToReads(sampleList,readCounts);
         final ReadLikelihoods<Allele> subject = new ReadLikelihoods<>(sampleList,alleleList,sampleToReads);
 
         final int sampleCount = readCounts.length;
@@ -651,8 +579,8 @@ public class ReadLikelihoodsUnitTest
         int expectedLikelihoodsSet = 0;
         for (int s = 0; s < sampleCount; s++) {
             expectedLikelihoodsSet += readCounts[s] * alleleCount;
-            final ReadLikelihoods.Matrix<Allele> matrix = subject.sampleMatrix(s);
-            final int readCount = matrix.readCount();
+            final LikelihoodMatrix<Allele> matrix = subject.sampleMatrix(s);
+            final int readCount = matrix.numberOfReads();
             for (int a = 0; a < alleleCount; a++)
                 for (int r = 0; r < readCount; r++)  {
                     final double likelihood = testLikelihood(s, a, r);
@@ -666,26 +594,26 @@ public class ReadLikelihoodsUnitTest
         Assert.assertEquals(totalLikelihoodsSet,expectedLikelihoodsSet);
     }
 
-    @Test(dependsOnMethods={"testLikelihoodWriting","testInstantiationAndBasicQueries"},
+    @Test(dependsOnMethods={"testInstantiationAndBasicQueries"},
             dataProvider="readCountsAndAlleleCountDataSkippingNoAlleleAndWithReference")
     public void testMapConversion(final int[] readCounts, final int alleleCount, final boolean hasReference) {
         final SampleList sampleList = sampleList(readCounts);
 
         final AlleleList<Allele> alleleList = alleleList(alleleCount,hasReference);
-        final Map<String,List<GATKSAMRecord>> sampleToReads = ReadLikelihoodsUnitTester.sampleToReads(sampleList,readCounts);
+        final Map<String,List<GATKRead>> sampleToReads = ReadLikelihoodsUnitTester.sampleToReads(sampleList,readCounts);
 
         final Set<Allele> alleleWithLikelihoodsSet = new HashSet<>();
-        final Set<GATKSAMRecord> readsWithLikelihoodsSet = new HashSet<>();
-        final Map<String,PerReadAlleleLikelihoodMap> map = new HashMap<>(sampleList.sampleCount());
-        final int sampleCount = sampleList.sampleCount();
+        final Set<GATKRead> readsWithLikelihoodsSet = new HashSet<>();
+        final Map<String,PerReadAlleleLikelihoodMap> map = new HashMap<>(sampleList.numberOfSamples());
+        final int sampleCount = sampleList.numberOfSamples();
         for (int s = 0; s < sampleCount; s++) {
-            final String sample = sampleList.sampleAt(s);
+            final String sample = sampleList.getSample(s);
             final PerReadAlleleLikelihoodMap perSampleMap = new PerReadAlleleLikelihoodMap();
-            final List<GATKSAMRecord> reads = sampleToReads.get(sample);
+            final List<GATKRead> reads = sampleToReads.get(sample);
             for (int a = 0; a < alleleCount; a++)
                 for (int r = 0; r < reads.size(); r++) {
-                    perSampleMap.add(reads.get(r), alleleList.alleleAt(a), testLikelihood(s, a, r));
-                    alleleWithLikelihoodsSet.add(alleleList.alleleAt(a));
+                    perSampleMap.add(reads.get(r), alleleList.getAllele(a), testLikelihood(s, a, r));
+                    alleleWithLikelihoodsSet.add(alleleList.getAllele(a));
                     readsWithLikelihoodsSet.add(reads.get(r));
                 }
             map.put(sample,perSampleMap);
@@ -695,22 +623,22 @@ public class ReadLikelihoodsUnitTest
         ReadLikelihoods<Allele> subject = ReadLikelihoods.fromPerAlleleReadLikelihoodsMap(map);
 
         for (int s = 0; s < sampleCount; s++) {
-            final String sample = sampleList.sampleAt(s);
-            final int sIndex = subject.sampleIndex(sample);
+            final String sample = sampleList.getSample(s);
+            final int sIndex = subject.indexOfSample(sample);
             Assert.assertTrue(sIndex >= 0);
             Assert.assertTrue(sIndex < sampleCount);
             final int sampleReadCount = sampleToReads.get(sample).size();
-            final ReadLikelihoods.Matrix<Allele> sampleLikelihoods = subject.sampleMatrix(sIndex);
+            final LikelihoodMatrix<Allele> sampleLikelihoods = subject.sampleMatrix(sIndex);
             for (int a = 0; a < alleleCount; a++) {
-                final Allele allele = alleleList.alleleAt(a);
-                final int aIndex = subject.alleleIndex(allele);
+                final Allele allele = alleleList.getAllele(a);
+                final int aIndex = subject.indexOfAllele(allele);
                 Assert.assertEquals(aIndex >= 0,alleleWithLikelihoodsSet.contains(allele));
                 Assert.assertTrue(aIndex < alleleCount);
                 if (aIndex == -1) continue;
                 for (int r = 0; r < sampleReadCount; r++) {
-                    final GATKSAMRecord read = sampleToReads.get(sample).get(r);
+                    final GATKRead read = sampleToReads.get(sample).get(r);
                     final int rIndex = subject.readIndex(sIndex,read);
-                    final int rIndex2 = sampleLikelihoods.readIndex(read);
+                    final int rIndex2 = sampleLikelihoods.indexOfRead(read);
                     Assert.assertEquals(rIndex,rIndex2);
                     Assert.assertEquals(rIndex >= 0,readsWithLikelihoodsSet.contains(read));
                     Assert.assertTrue(rIndex < sampleReadCount);
@@ -731,18 +659,18 @@ public class ReadLikelihoodsUnitTest
     private final Random rnd = Utils.getRandomGenerator();
 
     private void testLikelihoodMatrixQueries(final AlleleList<Allele> alleles, final SampleList samples,
-                                             final Map<String,List<GATKSAMRecord>> sampleToReads, ReadLikelihoods<Allele> result) {
-        for (final String sample : SampleListUtils.asList(samples)) {
-            final int sampleIndex = result.sampleIndex(sample);
-            final ReadLikelihoods.Matrix<Allele> likelihoodMatrix = result.sampleMatrix(sampleIndex);
+                                             final Map<String,List<GATKRead>> sampleToReads, ReadLikelihoods<Allele> result) {
+        for (final String sample : samples.asListOfSamples()) {
+            final int sampleIndex = result.indexOfSample(sample);
+            final LikelihoodMatrix<Allele> likelihoodMatrix = result.sampleMatrix(sampleIndex);
             final int sampleReadCount = sampleToReads.get(sample).size();
-            final List<GATKSAMRecord> reads = sampleToReads.get(sample);
-            Assert.assertEquals(likelihoodMatrix.alleleCount(), alleles.alleleCount());
-            Assert.assertEquals(likelihoodMatrix.readCount(), sampleReadCount);
-            for (int a = 0; a < likelihoodMatrix.alleleCount(); a++) {
-                Assert.assertEquals(likelihoodMatrix.alleleAt(a),alleles.alleleAt(a));
+            final List<GATKRead> reads = sampleToReads.get(sample);
+            Assert.assertEquals(likelihoodMatrix.numberOfAlleles(), alleles.numberOfAlleles());
+            Assert.assertEquals(likelihoodMatrix.numberOfReads(), sampleReadCount);
+            for (int a = 0; a < likelihoodMatrix.numberOfAlleles(); a++) {
+                Assert.assertEquals(likelihoodMatrix.getAllele(a),alleles.getAllele(a));
                 for (int r = 0; r < sampleReadCount; r++) {
-                    Assert.assertEquals(likelihoodMatrix.readAt(r),reads.get(r));
+                    Assert.assertEquals(likelihoodMatrix.getRead(r),reads.get(r));
                     Assert.assertEquals(likelihoodMatrix.get(a, r), 0.0);
                 }
             }
@@ -751,28 +679,28 @@ public class ReadLikelihoodsUnitTest
 
     private void testAlleleQueries(final AlleleList<Allele> alleles, ReadLikelihoods<Allele> result) {
         final Set<Integer> alleleIndices = new HashSet<>();
-        for (final Allele allele : AlleleListUtils.asList(alleles)) {
-            final int alleleIndex = result.alleleIndex(allele);
+        for (final Allele allele : alleles.asListOfAlleles()) {
+            final int alleleIndex = result.indexOfAllele(allele);
             Assert.assertTrue(alleleIndex >= 0);
             Assert.assertFalse(alleleIndices.contains(alleleIndex));
             alleleIndices.add(alleleIndex);
-            Assert.assertSame(allele,alleles.alleleAt(alleleIndex));
+            Assert.assertSame(allele,alleles.getAllele(alleleIndex));
         }
     }
 
-    private void testSampleQueries(final SampleList samples, Map<String, List<GATKSAMRecord>> reads,
+    private void testSampleQueries(final SampleList samples, Map<String, List<GATKRead>> reads,
                                    final ReadLikelihoods<Allele> result) {
-        final Set<Integer> sampleIds = new HashSet<>(samples.sampleCount());
-        for (final String sample : SampleListUtils.asList(samples)) {
-            final int sampleIndex = result.sampleIndex(sample);
+        final Set<Integer> sampleIds = new HashSet<>(samples.numberOfSamples());
+        for (final String sample : samples.asListOfSamples()) {
+            final int sampleIndex = result.indexOfSample(sample);
             Assert.assertTrue(sampleIndex >= 0);
             Assert.assertFalse(sampleIds.contains(sampleIndex));
             sampleIds.add(sampleIndex);
 
-            final List<GATKSAMRecord> sampleReads = result.sampleReads(sampleIndex);
-            final Set<GATKSAMRecord> sampleReadsSet = new HashSet<>(sampleReads);
-            final List<GATKSAMRecord> expectedSampleReadArray = reads.get(sample);
-            final Set<GATKSAMRecord> expectedSampleReadsSet = new HashSet<>(expectedSampleReadArray);
+            final List<GATKRead> sampleReads = result.sampleReads(sampleIndex);
+            final Set<GATKRead> sampleReadsSet = new HashSet<>(sampleReads);
+            final List<GATKRead> expectedSampleReadArray = reads.get(sample);
+            final Set<GATKRead> expectedSampleReadsSet = new HashSet<>(expectedSampleReadArray);
             Assert.assertEquals(sampleReadsSet,expectedSampleReadsSet);
 
             final int sampleReadCount = sampleReads.size();
@@ -791,12 +719,12 @@ public class ReadLikelihoodsUnitTest
             alleles[referenceIndex] = Allele.create(alleles[referenceIndex].getBases(),true);
         }
         final AlleleList<Allele> alleleList = new IndexedAlleleList<>(alleles);
-        if (alleleList.alleleCount() != alleles.length)
+        if (alleleList.numberOfAlleles() != alleles.length)
             throw new SkipException("repeated alleles, should be infrequent");
         return alleleList;
     }
 
-    private SAMFileHeader SAM_HEADER = ArtificialSAMUtils.createArtificialSamHeader(10, 0, 1000);
+    private SAMFileHeader SAM_HEADER = ArtificialReadUtils.createArtificialSamHeader(10, 0, 1000);
     final GenomeLocParser locParser = new GenomeLocParser(SAM_HEADER.getSequenceDictionary());
 
 

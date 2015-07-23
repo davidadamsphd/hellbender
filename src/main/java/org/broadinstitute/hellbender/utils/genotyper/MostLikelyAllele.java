@@ -2,6 +2,7 @@ package org.broadinstitute.hellbender.utils.genotyper;
 
 import htsjdk.variant.variantcontext.Allele;
 import org.broadinstitute.hellbender.utils.MathUtils;
+import org.broadinstitute.hellbender.utils.Utils;
 
 /**
  * Stores the most likely and second most likely alleles, along with a threshold
@@ -20,10 +21,10 @@ import org.broadinstitute.hellbender.utils.MathUtils;
 public final class MostLikelyAllele {
     public static final double INFORMATIVE_LIKELIHOOD_THRESHOLD = 0.2;
 
-    final Allele mostLikely;
-    final Allele secondLikely;
-    final double log10LikelihoodOfMostLikely;
-    final double log10LikelihoodOfSecondBest;
+    private final Allele mostLikely;
+    private final Allele secondMostLikely;
+    private final double log10LikelihoodOfMostLikely;
+    private final double log10LikelihoodOfSecondBest;
 
     /**
      * Create a new MostLikelyAllele
@@ -33,20 +34,23 @@ public final class MostLikelyAllele {
      *
      * @param mostLikely the most likely allele
      * @param secondMostLikely the most likely allele after mostLikely
-     * @param log10LikelihoodOfMostLikely the log10 likelihood of the most likely allele
-     * @param log10LikelihoodOfSecondBest the log10 likelihood of the next most likely allele (should be NEGATIVE_INFINITY if none is available)
+     * @param log10LikelihoodOfMostLikely the log10 likelihood of the most likely allele      (or {@link Double.NEGATIVE_INFINITY} if none is available)
+     * @param log10LikelihoodOfSecondBest the log10 likelihood of the next most likely allele (or {@link Double.NEGATIVE_INFINITY} if none is available)
      */
-    public MostLikelyAllele(final Allele mostLikely, final Allele secondMostLikely, double log10LikelihoodOfMostLikely, double log10LikelihoodOfSecondBest) {
-        if ( mostLikely == null ) throw new IllegalArgumentException("mostLikely allele cannot be null");
-        if ( log10LikelihoodOfMostLikely != Double.NEGATIVE_INFINITY && ! MathUtils.goodLog10Probability(log10LikelihoodOfMostLikely) )
+    public MostLikelyAllele(final Allele mostLikely, final Allele secondMostLikely, final double log10LikelihoodOfMostLikely, final double log10LikelihoodOfSecondBest) {
+        Utils.nonNull( mostLikely, "mostLikely allele cannot be null");
+        if ( log10LikelihoodOfMostLikely != Double.NEGATIVE_INFINITY && ! MathUtils.goodLog10Probability(log10LikelihoodOfMostLikely) ) {
             throw new IllegalArgumentException("log10LikelihoodOfMostLikely must be either -Infinity or a good log10 prob but got " + log10LikelihoodOfMostLikely);
-        if ( log10LikelihoodOfSecondBest != Double.NEGATIVE_INFINITY && ! MathUtils.goodLog10Probability(log10LikelihoodOfSecondBest) )
+        }
+        if ( log10LikelihoodOfSecondBest != Double.NEGATIVE_INFINITY && ! MathUtils.goodLog10Probability(log10LikelihoodOfSecondBest) ) {
             throw new IllegalArgumentException("log10LikelihoodOfSecondBest must be either -Infinity or a good log10 prob but got " + log10LikelihoodOfSecondBest);
-        if ( log10LikelihoodOfMostLikely < log10LikelihoodOfSecondBest )
+        }
+        if ( log10LikelihoodOfMostLikely < log10LikelihoodOfSecondBest ) {
             throw new IllegalArgumentException("log10LikelihoodOfMostLikely must be <= log10LikelihoodOfSecondBest but got " + log10LikelihoodOfMostLikely + " vs 2nd " + log10LikelihoodOfSecondBest);
+        }
 
         this.mostLikely = mostLikely;
-        this.secondLikely = secondMostLikely;
+        this.secondMostLikely = secondMostLikely;
         this.log10LikelihoodOfMostLikely = log10LikelihoodOfMostLikely;
         this.log10LikelihoodOfSecondBest = log10LikelihoodOfSecondBest;
     }
@@ -56,7 +60,7 @@ public final class MostLikelyAllele {
     }
 
     public Allele getSecondMostLikelyAllele() {
-        return secondLikely;
+        return secondMostLikely;
     }
 
     public double getLog10LikelihoodOfMostLikely() {
@@ -83,7 +87,7 @@ public final class MostLikelyAllele {
      * @return true if so, false if not
      */
     public boolean isInformative(final double log10ThresholdForInformative) {
-        return getLog10LikelihoodOfMostLikely() - getLog10LikelihoodOfSecondBest() > log10ThresholdForInformative;
+        return log10LikelihoodOfMostLikely - log10LikelihoodOfSecondBest > log10ThresholdForInformative;
     }
 
     /**
@@ -100,6 +104,6 @@ public final class MostLikelyAllele {
      * @return a non-null allele
      */
     public Allele getAlleleIfInformative(final double log10ThresholdForInformative) {
-        return isInformative(log10ThresholdForInformative) ? getMostLikelyAllele() : Allele.NO_CALL;
+        return isInformative(log10ThresholdForInformative) ? mostLikely : Allele.NO_CALL;
     }
 }
