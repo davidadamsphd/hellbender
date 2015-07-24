@@ -75,15 +75,10 @@ installApp.dependsOn downloadGsaLibFile
 build.dependsOn installApp
 check.dependsOn installApp
 
-configurations.all {
-  resolutionStrategy {
-    force 'htsjdk:commons-io:1.134-lb_make_metrics_base_classes_serializable-SNAPSHOT'
- }
-}
 
 dependencies {
     compile files("${System.properties['java.home']}/../lib/tools.jar")
-
+    
     compile 'com.github.samtools:htsjdk:1.137'
     compile ('com.google.cloud.genomics:google-genomics-dataflow:v1beta2-0.14') {
         // an upstream dependency includes guava-jdk5, but we want the newer version instead.
