@@ -37,7 +37,7 @@ import java.util.*;
         programGroup = QCProgramGroup.class
 )
 public final class CollectRrbsMetrics extends PicardCommandLineProgram {
-    final static String USAGE = "Collects metrics about bisulfite conversion for RRBS data";
+    static final String USAGE = "Collects metrics about bisulfite conversion for RRBS data";
     private static final String R_SCRIPT = "rrbsQc.R";
 
     @Argument(doc = "The BAM or SAM file containing aligned reads. Must be coordinate sorted", shortName = StandardArgumentDefinitions.INPUT_SHORT_NAME)

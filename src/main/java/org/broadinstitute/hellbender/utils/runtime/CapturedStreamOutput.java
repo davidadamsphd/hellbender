@@ -87,7 +87,7 @@ public final class CapturedStreamOutput extends StreamOutput {
      * Drain the input stream to keep the process from backing up until it's empty.
      * File streams will be closed automatically when this method returns.
      *
-     * @throws java.io.IOException When unable to read or write.
+     * @throws IOException When unable to read or write.
      */
     public void readAndClose() throws IOException {
         try {

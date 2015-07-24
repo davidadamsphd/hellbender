@@ -27,7 +27,7 @@ public final class BaseRecalOutputSource implements Serializable {
      * @param pipeline the pipeline, with authentication information.
      * @param GCSFileName the path to the recalibration report. Must start with "gs://"
      */
-    static public PCollection<BaseRecalOutput> of(final Pipeline pipeline, String GCSFileName) {
+    public static PCollection<BaseRecalOutput> of(final Pipeline pipeline, String GCSFileName) {
         return pipeline.apply(Create.of(GCSFileName).setName("calibration report name"))
                 .apply(ParDo.of(new DoFn<String, BaseRecalOutput>() {
                     private static final long serialVersionUID = 1L;
@@ -55,7 +55,7 @@ public final class BaseRecalOutputSource implements Serializable {
      * @param pipeline the pipeline, with authentication information.
      * @param path the Recalibration report
      */
-    static public PCollection<BaseRecalOutput> loadFileOrRemote(final Pipeline pipeline, String path) {
+    public static PCollection<BaseRecalOutput> loadFileOrRemote(final Pipeline pipeline, String path) {
         if (BucketUtils.isRemoteStorageUrl(path)) {
             return BaseRecalOutputSource.of(pipeline, path);
         } else{

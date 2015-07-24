@@ -181,7 +181,7 @@ public interface ExonCollection<E> {
      *
      * @param index the target exon index.
      * @return never {@code null}.
-     * @throws java.lang.IndexOutOfBoundsException if {@code index} is not valid.
+     * @throws IndexOutOfBoundsException if {@code index} is not valid.
      */
     SimpleInterval location(final int index);
 

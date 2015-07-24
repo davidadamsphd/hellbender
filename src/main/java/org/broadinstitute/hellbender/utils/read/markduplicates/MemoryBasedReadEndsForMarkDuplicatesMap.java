@@ -16,7 +16,7 @@ final class MemoryBasedReadEndsForMarkDuplicatesMap implements ReadEndsForMarkDu
      * Index of this list is sequence index.  Value is map from String {read group id:read name} to ReadEnds.
      * When a ReadEnds is put into this container, it is stored according to the sequenceIndex of the mate
      */
-    private List<Map<String, ReadEndsForMarkDuplicates>> mapPerSequence = new ArrayList<>();
+    private final List<Map<String, ReadEndsForMarkDuplicates>> mapPerSequence = new ArrayList<>();
 
     public ReadEndsForMarkDuplicates remove(int mateSequenceIndex, String key) {
         if (mateSequenceIndex >= mapPerSequence.size()) {

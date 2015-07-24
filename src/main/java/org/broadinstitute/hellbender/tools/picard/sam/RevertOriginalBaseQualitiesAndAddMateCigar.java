@@ -43,7 +43,7 @@ public final class RevertOriginalBaseQualitiesAndAddMateCigar extends PicardComm
             + " Set to 0 to never skip the file.")
     public int MAX_RECORDS_TO_EXAMINE = 10000;
 
-    private final static Log log = Log.getInstance(RevertOriginalBaseQualitiesAndAddMateCigar.class);
+    private static final Log log = Log.getInstance(RevertOriginalBaseQualitiesAndAddMateCigar.class);
 
     public RevertOriginalBaseQualitiesAndAddMateCigar() {
         this.CREATE_INDEX = true;
@@ -123,8 +123,8 @@ public final class RevertOriginalBaseQualitiesAndAddMateCigar extends PicardComm
         CANNOT_SKIP_FOUND_OQ("Cannot skip the BAM as we found a record with an OQ", false),
         CANNOT_SKIP_FOUND_NO_MC("Cannot skip the BAM as we found a mate with no mate cigar tag", false),
         FOUND_NO_EVIDENCE("Found no evidence of OQ or mate with no mate cigar in the first %d records.  Will continue...", false);
-        final private String format;
-        final private boolean skip;
+        private final String format;
+        private final boolean skip;
 
         private CanSkipSamFile(final String format, final boolean skip) {
             this.format = format;

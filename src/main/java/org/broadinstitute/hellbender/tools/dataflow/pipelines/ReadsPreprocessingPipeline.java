@@ -102,7 +102,7 @@ public class ReadsPreprocessingPipeline extends DataflowCommandLineProgram {
     private static class MarkDuplicatesStub extends PTransform<PCollection<GATKRead>, PCollection<GATKRead>> {
         private static final long serialVersionUID = 1L;
 
-        private PCollectionView<SAMFileHeader> header;
+        private final PCollectionView<SAMFileHeader> header;
 
         public MarkDuplicatesStub( final PCollectionView<SAMFileHeader> header ) {
             this.header = header;
@@ -123,7 +123,7 @@ public class ReadsPreprocessingPipeline extends DataflowCommandLineProgram {
 
     private static class BaseRecalibratorStub extends PTransform<PCollection<KV<GATKRead, ReadContextData>>, PCollection<RecalibrationTables>> {
         private static final long serialVersionUID = 1L;
-        private PCollectionView<SAMFileHeader> header;
+        private final PCollectionView<SAMFileHeader> header;
 
         public BaseRecalibratorStub( final PCollectionView<SAMFileHeader> header ) {
             this.header = header;
@@ -145,8 +145,8 @@ public class ReadsPreprocessingPipeline extends DataflowCommandLineProgram {
 
     private static class ApplyBQSRStub extends PTransform<PCollection<GATKRead>, PCollection<GATKRead>> {
         private static final long serialVersionUID = 1L;
-        private PCollectionView<SAMFileHeader> header;
-        private PCollectionView<RecalibrationTables> recalibrationReport;
+        private final PCollectionView<SAMFileHeader> header;
+        private final PCollectionView<RecalibrationTables> recalibrationReport;
 
         public ApplyBQSRStub( final PCollectionView<SAMFileHeader> header, final PCollectionView<RecalibrationTables> recalibrationReport ) {
             this.header = header;

@@ -75,7 +75,7 @@ public final class RevertSam extends PicardCommandLineProgram {
             "same sample alias ", shortName = StandardArgumentDefinitions.LIBRARY_NAME_SHORT_NAME, optional = true)
     public String LIBRARY_NAME;
 
-    private final static Log log = Log.getInstance(RevertSam.class);
+    private static final Log log = Log.getInstance(RevertSam.class);
 
     /**
      * Enforce that output ordering is queryname when sanitization is turned on since it requires a queryname sort.
