@@ -393,7 +393,7 @@ public final class MarkDuplicatesDataflow extends DataflowCommandLineProgram {
         private static final CustomCoder<GATKRead> readCoder = new GATKReadCoder();
 
         @Override
-        public void encode( PairedEnds value, OutputStream outStream, Context context ) throws CoderException, IOException {
+        public void encode( PairedEnds value, OutputStream outStream, Context context ) throws IOException {
             if ( value == null || value.first() == null ) {
                 throw new IOException("nothing to encode");
             }
@@ -407,7 +407,7 @@ public final class MarkDuplicatesDataflow extends DataflowCommandLineProgram {
         }
 
         @Override
-        public PairedEnds decode( InputStream inStream, Context context ) throws CoderException, IOException {
+        public PairedEnds decode( InputStream inStream, Context context ) throws IOException {
             final boolean isCompletePair = SerializableCoder.of(Boolean.class).decode(inStream, context);
 
             final PairedEnds pairedEnds = PairedEnds.of(readCoder.decode(inStream, context));

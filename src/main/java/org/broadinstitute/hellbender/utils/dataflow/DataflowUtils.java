@@ -283,7 +283,7 @@ public final class DataflowUtils {
                 .of(new DoFn<T, Void>() {
                     private static final long serialVersionUID = 1L;
                     @Override
-                    public void processElement(ProcessContext c) throws IOException, GeneralSecurityException {
+                    public void processElement(ProcessContext c) throws IOException {
                         try (ObjectOutputStream out = new ObjectOutputStream(BucketUtils.createFile(destPath, c.getPipelineOptions()))) {
                             out.writeObject(c.element());
                         }

@@ -45,12 +45,12 @@ public final class CapturedStreamOutput extends StreamOutput {
                     } else {
                         outputStream = new HardThresholdingOutputStream(bufferSize) {
                             @Override
-                            protected OutputStream getStream() throws IOException {
+                            protected OutputStream getStream() {
                                 return bufferTruncated ? NullOutputStream.NULL_OUTPUT_STREAM : bufferStream;
                             }
 
                             @Override
-                            protected void thresholdReached() throws IOException {
+                            protected void thresholdReached() {
                                 bufferTruncated = true;
                             }
                         };

@@ -283,7 +283,7 @@ public final class CommandLineParser {
     private boolean isSpecialFlagSet(OptionSet parsedArguments, String flagName){
         if (parsedArguments.has(flagName)){
             Object value = parsedArguments.valueOf(flagName);
-            return  (value == null || !((String)value).equals("false"));
+            return  (value == null || !value.equals("false"));
         } else{
             return false;
         }

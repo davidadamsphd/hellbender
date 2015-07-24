@@ -20,6 +20,7 @@ import org.broadinstitute.hellbender.utils.read.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.function.UnaryOperator;
 import java.util.stream.StreamSupport;
 
 import static org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions.*;
@@ -95,7 +96,7 @@ public final class SplitNCigarReads extends CommandLineProgram {
         final Iterable<GATKRead> readIter = new SAMRecordToReadIterator(in.iterator());
         final SAMFileGATKReadWriter outputWriter = initialize(in);
 
-        final ReadTransformer rnaReadTransform = REFACTOR_NDN_CIGAR_READS ? new NDNCigarReadTransformer() : ReadTransformer.identity();
+        final ReadTransformer rnaReadTransform = REFACTOR_NDN_CIGAR_READS ? new NDNCigarReadTransformer() : UnaryOperator.identity();
 
         StreamSupport.stream(readIter.spliterator(), false)
                 .map(rnaReadTransform)
