@@ -115,7 +115,11 @@ final class MarkDuplicatesUtils {
 
                     @Override
                     public void processElement(final ProcessContext context) throws Exception {
-                        final ImmutableListMultimap<Boolean, PairedEnds> paired = Multimaps.index(context.element().getValue(), pair -> pair.second() != null);
+                        // We need to copy the PairedEnds because we mutate it (and Dataflow assumes that elements
+                        // are never mutated).
+                        Iterable<PairedEnds> pairedEndsCopy = Iterables.transform(context.element().getValue(), PairedEnds::copy);
+
+                        final ImmutableListMultimap<Boolean, PairedEnds> paired = Multimaps.index(pairedEndsCopy, pair -> pair.second() != null);
 
                         // As in Picard, unpaired ends left alone.
                         for (final PairedEnds pair : paired.get(false)) {
@@ -132,11 +136,11 @@ final class MarkDuplicatesUtils {
                         //Mark everyone who's not best as a duplicate
                         for (final PairedEnds pair : Iterables.skip(scored, 1)) {
                             GATKRead record = pair.first();
-                            record.setIsDuplicate(true);
+                            record.setIsDuplicate(true); // Operating on the copy of the read.
                             context.output(record);
 
                             record = pair.second();
-                            record.setIsDuplicate(true);
+                            record.setIsDuplicate(true); // Operating on the copy of the read.
                             context.output(record);
                         }
                     }
@@ -169,7 +173,8 @@ final class MarkDuplicatesUtils {
                     @Override
                     public void processElement(final ProcessContext context) throws Exception {
                         //split reads by paired vs unpaired
-                        final Map<Boolean, List<GATKRead>> byPairing = StreamSupport.stream(context.element().getValue().spliterator(), false).collect(Collectors.partitioningBy(
+                        Iterable<GATKRead> readsCopy = Iterables.transform(context.element().getValue(), GATKRead::copy);
+                        final Map<Boolean, List<GATKRead>> byPairing = StreamSupport.stream(readsCopy.spliterator(), false).collect(Collectors.partitioningBy(
                                 read -> ReadUtils.readHasMappedMate(read)
                         ));
 
@@ -206,8 +211,8 @@ final class MarkDuplicatesUtils {
                     private static final long serialVersionUID = 1L;
                     @Override
                     public void processElement(final ProcessContext context) throws Exception {
-                        final GATKRead record = context.element();
-                        record.setIsDuplicate(false);
+                        final GATKRead record = context.element().copy();
+                        record.setIsDuplicate(false); // Operating on the copy of the read.
                         final SAMFileHeader h = context.sideInput(headerPcolView);
                         final String key = ReadsKey.keyForFragment(h, record);
                         final KV<String, GATKRead> kv = KV.of(key, record);
