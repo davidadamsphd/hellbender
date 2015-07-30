@@ -4,6 +4,7 @@ import com.google.cloud.dataflow.sdk.Pipeline;
 import com.google.cloud.dataflow.sdk.coders.SerializableCoder;
 import com.google.cloud.dataflow.sdk.options.PipelineOptions;
 import com.google.cloud.dataflow.sdk.transforms.Create;
+import com.google.cloud.dataflow.sdk.transforms.SerializableFunction;
 import com.google.cloud.dataflow.sdk.util.gcsfs.GcsPath;
 import com.google.cloud.dataflow.sdk.values.PCollection;
 import htsjdk.samtools.SAMFileHeader;
@@ -38,6 +39,7 @@ import org.broadinstitute.hellbender.utils.IntervalUtils;
 import org.broadinstitute.hellbender.utils.SequenceDictionaryUtils;
 import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.Utils;
+import org.broadinstitute.hellbender.utils.baq.BAQ;
 import org.broadinstitute.hellbender.utils.dataflow.BucketUtils;
 import org.broadinstitute.hellbender.utils.dataflow.DataflowUtils;
 import org.broadinstitute.hellbender.utils.io.IOUtils;
@@ -65,6 +67,15 @@ import java.util.List;
 )
 public class BaseRecalibratorDataflow extends DataflowCommandLineProgram {
     private static final long serialVersionUID = 1L;
+
+    public static final SerializableFunction<GATKRead, SimpleInterval> baqWindowFunction = new SerializableFunction<GATKRead, SimpleInterval>() {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public SimpleInterval apply( GATKRead read ) {
+            return BAQ.getReferenceWindowForRead(read, BAQ.DEFAULT_BANDWIDTH, BAQ.DEFAULT_INCLUDE_CLIPPED_BASES);
+        }
+    };
 
     private final static Logger logger = LogManager.getLogger(BaseRecalibratorDataflow.class);
     // temporary file with the serialized recalibrationTables.

@@ -13,6 +13,7 @@ import org.broadinstitute.hellbender.engine.dataflow.datasources.RefAPISource;
 import org.broadinstitute.hellbender.engine.dataflow.datasources.VariantsDataflowSource;
 import org.broadinstitute.hellbender.engine.dataflow.transforms.KeyReadsByUUID;
 import org.broadinstitute.hellbender.exceptions.GATKException;
+import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.reference.ReferenceBases;
 import org.broadinstitute.hellbender.utils.variant.Variant;
@@ -28,13 +29,13 @@ import java.util.UUID;
  * This transform is intended for direct use in pipelines.
  */
 public class AddContextDataToRead {
+
     public static PCollection<KV<GATKRead, ReadContextData>> add(PCollection<GATKRead> pReads, RefAPIMetadata refAPIMetadata, VariantsDataflowSource variantsDataflowSource) {
         PCollection<Variant> pVariants = variantsDataflowSource.getAllVariants();
         PCollection<KV<GATKRead, Iterable<Variant>>> kvReadVariants = KeyVariantsByRead.key(pVariants, pReads);
         PCollection<KV<GATKRead, ReferenceBases>> kvReadRefBases =
                 RefBasesForReads.addBases(pReads, refAPIMetadata);
         return join(pReads, kvReadRefBases, kvReadVariants);
-
     }
 
     /**

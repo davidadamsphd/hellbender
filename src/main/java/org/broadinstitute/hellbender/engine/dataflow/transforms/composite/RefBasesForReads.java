@@ -1,5 +1,6 @@
 package org.broadinstitute.hellbender.engine.dataflow.transforms.composite;
 
+import com.google.cloud.dataflow.sdk.transforms.SerializableFunction;
 import com.google.cloud.dataflow.sdk.values.KV;
 import com.google.cloud.dataflow.sdk.values.PCollection;
 import org.broadinstitute.hellbender.engine.dataflow.datasources.RefAPIMetadata;
@@ -8,6 +9,7 @@ import org.broadinstitute.hellbender.engine.dataflow.transforms.KeyReadsByRefSha
 import org.broadinstitute.hellbender.engine.dataflow.transforms.RefBasesFromAPI;
 import org.broadinstitute.hellbender.engine.dataflow.transforms.PairReadWithRefBases;
 import org.broadinstitute.hellbender.engine.dataflow.datasources.ReferenceShard;
+import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.reference.ReferenceBases;
 
@@ -46,9 +48,9 @@ import org.broadinstitute.hellbender.utils.reference.ReferenceBases;
  */
 public class RefBasesForReads {
     public static PCollection<KV<GATKRead, ReferenceBases>> addBases(PCollection<GATKRead> pReads, RefAPIMetadata refAPIMetadata) {
-        PCollection<KV<ReferenceShard, Iterable<GATKRead>>> shardAndRead = pReads.apply(new KeyReadsByRefShard());
+        PCollection<KV<ReferenceShard, Iterable<GATKRead>>> shardAndRead = pReads.apply(new KeyReadsByRefShard(refAPIMetadata.getReferenceWindowFunction()));
         PCollection<KV<ReferenceBases, Iterable<GATKRead>>> groupedReads =
                 RefBasesFromAPI.getBasesForShard(shardAndRead, refAPIMetadata);
-        return groupedReads.apply(new PairReadWithRefBases());
+        return groupedReads.apply(new PairReadWithRefBases(refAPIMetadata.getReferenceWindowFunction()));
     }
 }

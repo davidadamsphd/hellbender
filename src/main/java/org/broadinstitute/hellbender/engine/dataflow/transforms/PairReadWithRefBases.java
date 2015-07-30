@@ -3,8 +3,11 @@ package org.broadinstitute.hellbender.engine.dataflow.transforms;
 import com.google.cloud.dataflow.sdk.transforms.DoFn;
 import com.google.cloud.dataflow.sdk.transforms.PTransform;
 import com.google.cloud.dataflow.sdk.transforms.ParDo;
+import com.google.cloud.dataflow.sdk.transforms.SerializableFunction;
 import com.google.cloud.dataflow.sdk.values.KV;
 import com.google.cloud.dataflow.sdk.values.PCollection;
+import org.broadinstitute.hellbender.engine.dataflow.datasources.RefAPIMetadata;
+import org.broadinstitute.hellbender.engine.dataflow.datasources.RefWindowFunctions;
 import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.reference.ReferenceBases;
@@ -39,6 +42,16 @@ import org.broadinstitute.hellbender.utils.reference.ReferenceBases;
 public class PairReadWithRefBases extends PTransform<PCollection<KV<ReferenceBases, Iterable<GATKRead>>>, PCollection<KV<GATKRead, ReferenceBases>>> {
     private static final long serialVersionUID = 1L;
 
+    private final SerializableFunction<GATKRead, SimpleInterval> referenceWindowFunction;
+
+    public PairReadWithRefBases() {
+        this(RefWindowFunctions.IDENTITY_FUNCTION);
+    }
+
+    public PairReadWithRefBases( final SerializableFunction<GATKRead, SimpleInterval> referenceWindowFunction ) {
+        this.referenceWindowFunction = referenceWindowFunction;
+    }
+
     @Override
     public PCollection<KV<GATKRead, ReferenceBases>> apply(PCollection<KV<ReferenceBases, Iterable<GATKRead>>> input) {
         return input.apply(ParDo.of(new DoFn<KV<ReferenceBases, Iterable<GATKRead>>, KV<GATKRead, ReferenceBases>>() {
@@ -52,7 +65,7 @@ public class PairReadWithRefBases extends PTransform<PCollection<KV<ReferenceBas
                 final Iterable<GATKRead> reads = c.element().getValue();
                 // For every read, find the subset of the reference that matches it.
                 for (GATKRead r : reads) {
-                    final ReferenceBases subset = shard.getSubset(new SimpleInterval(r));
+                    final ReferenceBases subset = shard.getSubset(referenceWindowFunction.apply(r));
                     c.output(KV.of(r, subset));
                 }
             }

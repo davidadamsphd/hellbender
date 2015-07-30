@@ -1,5 +1,9 @@
 package org.broadinstitute.hellbender.engine.dataflow.datasources;
 
+import com.google.cloud.dataflow.sdk.transforms.SerializableFunction;
+import org.broadinstitute.hellbender.utils.SimpleInterval;
+import org.broadinstitute.hellbender.utils.read.GATKRead;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
@@ -12,12 +16,18 @@ public class RefAPIMetadata implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public RefAPIMetadata(String referenceName, Map<String, String> referenceNameToIdTable) {
+        this(referenceName, referenceNameToIdTable, RefWindowFunctions.IDENTITY_FUNCTION);
+    }
+
+    public RefAPIMetadata(String referenceName, Map<String, String> referenceNameToIdTable, SerializableFunction<GATKRead, SimpleInterval> referenceWindowFunction) {
         this.referenceName = referenceName;
         this.referenceNameToIdTable = Collections.unmodifiableMap(referenceNameToIdTable);
+        this.referenceWindowFunction = referenceWindowFunction;
     }
 
     private final String referenceName;
     private final Map<String, String> referenceNameToIdTable;
+    private final SerializableFunction<GATKRead, SimpleInterval> referenceWindowFunction;
 
     public String getReferenceName() {
         return referenceName;
@@ -25,5 +35,9 @@ public class RefAPIMetadata implements Serializable {
 
     public Map<String, String> getReferenceNameToIdTable() {
         return referenceNameToIdTable;
+    }
+
+    public SerializableFunction<GATKRead, SimpleInterval> getReferenceWindowFunction() {
+        return referenceWindowFunction;
     }
 }

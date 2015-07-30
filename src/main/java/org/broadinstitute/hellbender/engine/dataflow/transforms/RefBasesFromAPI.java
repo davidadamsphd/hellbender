@@ -14,6 +14,10 @@ import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.reference.ReferenceBases;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 /**
  * RefBasesFromAPI queries the Google Genomics API for reference bases that span all of the reads on each shard.
  *
@@ -37,7 +41,8 @@ public class RefBasesFromAPI {
                     @Override
                     public void processElement(ProcessContext c) throws Exception {
                         final Iterable<GATKRead> reads = c.element().getValue();
-                        SimpleInterval interval = SimpleInterval.getSpanningInterval(reads);
+                        final List<SimpleInterval> readWindows = StreamSupport.stream(reads.spliterator(), false).map(read -> refAPIMetadata.getReferenceWindowFunction().apply(read)).collect(Collectors.toList());
+                        SimpleInterval interval = SimpleInterval.getSpanningInterval(readWindows);
                         RefAPISource refAPISource = RefAPISource.getRefAPISource();
 
                         ReferenceBases bases = refAPISource.getReferenceBases(c.getPipelineOptions(), c.sideInput(dataView), interval);

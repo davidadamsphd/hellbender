@@ -1,12 +1,12 @@
 package org.broadinstitute.hellbender.engine.dataflow.transforms;
 
-import com.google.cloud.dataflow.sdk.transforms.DoFn;
-import com.google.cloud.dataflow.sdk.transforms.GroupByKey;
-import com.google.cloud.dataflow.sdk.transforms.PTransform;
-import com.google.cloud.dataflow.sdk.transforms.ParDo;
+import com.google.cloud.dataflow.sdk.transforms.*;
 import com.google.cloud.dataflow.sdk.values.KV;
 import com.google.cloud.dataflow.sdk.values.PCollection;
+import org.broadinstitute.hellbender.engine.dataflow.datasources.RefAPIMetadata;
+import org.broadinstitute.hellbender.engine.dataflow.datasources.RefWindowFunctions;
 import org.broadinstitute.hellbender.engine.dataflow.datasources.ReferenceShard;
+import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 
 /**
@@ -22,13 +22,23 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
 public class KeyReadsByRefShard extends PTransform<PCollection<GATKRead>, PCollection<KV<ReferenceShard, Iterable<GATKRead>>>> {
     private static final long serialVersionUID = 1L;
 
+    private final SerializableFunction<GATKRead, SimpleInterval> referenceWindowFunction;
+
+    public KeyReadsByRefShard() {
+        this(RefWindowFunctions.IDENTITY_FUNCTION);
+    }
+
+    public KeyReadsByRefShard( final SerializableFunction<GATKRead, SimpleInterval> referenceWindowFunction ) {
+        this.referenceWindowFunction = referenceWindowFunction;
+    }
+
     @Override
     public PCollection<KV<ReferenceShard, Iterable<GATKRead>>> apply(PCollection<GATKRead> input) {
         PCollection<KV<ReferenceShard, GATKRead>> keyReadByReferenceShard = input.apply(ParDo.of(new DoFn<GATKRead, KV<ReferenceShard, GATKRead>>() {
             private static final long serialVersionUID = 1L;
             @Override
             public void processElement(ProcessContext c) throws Exception {
-                ReferenceShard shard = ReferenceShard.getShardNumberFromInterval(c.element());
+                ReferenceShard shard = ReferenceShard.getShardNumberFromInterval(referenceWindowFunction.apply(c.element()));
                 c.output(KV.of(shard, c.element()));
             }
         }).named("KeyReadByRefShard"));
