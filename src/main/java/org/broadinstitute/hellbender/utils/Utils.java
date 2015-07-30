@@ -12,6 +12,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.stream.StreamSupport;
 
 public final class Utils {
     private Utils(){}
@@ -293,6 +294,23 @@ public final class Utils {
         return bytes;
     }
 
+
+    /**
+     * Count the number of occurences of element in array.
+     * @param element
+     * @param array
+     * @return
+     */
+    public static int countOccurrences(final boolean element, final boolean[] array) {
+        int count = 0;
+        for (final boolean b : array) {
+            if (element == b)
+                count++;
+        }
+
+        return count;
+    }
+
     /**
      * Splits expressions in command args by spaces and returns the array of expressions.
      * Expressions may use single or double quotes to group any individual expression, but not both.
@@ -438,6 +456,19 @@ public final class Utils {
             throw new IllegalArgumentException("the index points past the last element of the collection or array: " + index + " > " + (length -1));
         }
         return index;
+    }
+
+    // @TODO CMN - add a test
+    public static int arrayMaxInt(final List<Integer> array) {
+        if (array == null)
+            throw new IllegalArgumentException("Array cannot be null!");
+        if (array.size() == 0)
+            throw new IllegalArgumentException("Array size cannot be 0!");
+
+        int m = array.get(0);
+        for (int e : array)
+            m = Math.max(m, e);
+        return m;
     }
 
     /**
