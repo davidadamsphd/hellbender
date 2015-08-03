@@ -96,7 +96,7 @@ public final class SplitNCigarReads extends CommandLineProgram {
         final Iterable<GATKRead> readIter = new SAMRecordToReadIterator(in.iterator());
         final SAMFileGATKReadWriter outputWriter = initialize(in);
 
-        final ReadTransformer rnaReadTransform = REFACTOR_NDN_CIGAR_READS ? new NDNCigarReadTransformer() : UnaryOperator.identity();
+        final ReadTransformer rnaReadTransform = REFACTOR_NDN_CIGAR_READS ? new NDNCigarReadTransformer() : ReadTransformer.identity();
 
         StreamSupport.stream(readIter.spliterator(), false)
                 .map(rnaReadTransform)
