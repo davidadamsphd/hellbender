@@ -33,19 +33,19 @@ public final class PrintReadsIntegrationTest extends CommandLineProgramTest{
     }
 
     @Test(dataProvider="testingDataCRAM")
-    public void testFileToFileCRAM(String fileIn, String extOut) throws Exception {
+    public void testFileToFileCRAM(String fileIn, String extOut, String reference) throws Exception {
         String samFile= fileIn;
         final File outFile = File.createTempFile(samFile + ".", extOut);
         outFile.deleteOnExit();
-        File ORIG_BAM = new File(TEST_DATA_DIR, samFile);
-        File reference = new File(TEST_DATA_DIR, "print_reads.fasta");
+        final File ORIG_BAM = new File(TEST_DATA_DIR, samFile);
+        final File refFile = new File(TEST_DATA_DIR, reference);
         final String[] args = new String[]{
                 "--input" , ORIG_BAM.getAbsolutePath(),
                 "--output", outFile.getAbsolutePath(),
-                "-R", reference.getAbsolutePath()
+                "-R", refFile.getAbsolutePath()
         };
-        Assert.assertEquals(runCommandLine(args), null);
-        SamAssertionUtils.assertSamsEqual(ORIG_BAM, outFile, reference);
+        runCommandLine(args);
+        SamAssertionUtils.assertSamsEqual(ORIG_BAM, outFile, refFile);
     }
 
     @DataProvider(name="testingData")
@@ -61,11 +61,11 @@ public final class PrintReadsIntegrationTest extends CommandLineProgramTest{
     @DataProvider(name="testingDataCRAM")
     public Object[][] testingDataCRAM() {
         return new String[][]{
-                {"print_reads.sorted.cram", ".sam"},
-                {"print_reads.sorted.cram", ".bam"},
-                {"print_reads.sorted.cram", ".cram"},
-                {"print_reads.sorted.sam", ".cram"},
-                {"print_reads.sorted.bam", ".cram"}
+                {"print_reads.sorted.cram", ".sam", "print_reads.fasta"},
+                {"print_reads.sorted.cram", ".bam", "print_reads.fasta"},
+                {"print_reads.sorted.cram", ".cram", "print_reads.fasta"},
+                {"print_reads.sorted.sam", ".cram", "print_reads.fasta"},
+                {"print_reads.sorted.bam", ".cram", "print_reads.fasta"}
         };
     }
 
