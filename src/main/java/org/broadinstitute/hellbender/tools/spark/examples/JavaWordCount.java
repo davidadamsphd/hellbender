@@ -46,6 +46,7 @@ public final class JavaWordCount {
         JavaRDD<String> lines = ctx.textFile(args[0], 1);
 
         JavaRDD<String> words = lines.flatMap(new FlatMapFunction<String, String>() {
+            private static final long serialVersionUID = 0L;
             @Override
             public Iterable<String> call(String s) {
                 return Arrays.asList(SPACE.split(s));
@@ -53,6 +54,7 @@ public final class JavaWordCount {
         });
 
         JavaPairRDD<String, Integer> ones = words.mapToPair(new PairFunction<String, String, Integer>() {
+            private static final long serialVersionUID = 0L;
             @Override
             public Tuple2<String, Integer> call(String s) {
                 return new Tuple2<String, Integer>(s, 1);
@@ -60,6 +62,7 @@ public final class JavaWordCount {
         });
 
         JavaPairRDD<String, Integer> counts = ones.reduceByKey(new Function2<Integer, Integer, Integer>() {
+            private static final long serialVersionUID = 0L;
             @Override
             public Integer call(Integer i1, Integer i2) {
                 return i1 + i2;

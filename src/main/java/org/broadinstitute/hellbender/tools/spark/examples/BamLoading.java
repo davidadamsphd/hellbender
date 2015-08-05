@@ -18,22 +18,24 @@
 package org.broadinstitute.hellbender.tools.spark.examples;
 
 import com.beust.jcommander.internal.Lists;
-import com.cloudera.dataflow.hadoop.HadoopIO;
-import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SamReaderFactory;
-import htsjdk.samtools.ValidationStringency;
+import com.google.api.services.genomics.model.Read;
+import com.google.cloud.genomics.utils.ReadUtils;
+import htsjdk.samtools.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.Function;
 import org.broadinstitute.hellbender.engine.ReadsDataSource;
 import org.broadinstitute.hellbender.utils.IntervalUtils;
 import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
+import org.broadinstitute.hellbender.utils.read.GoogleGenomicsReadToGATKReadAdapter;
 import org.seqdoop.hadoop_bam.AnySAMInputFormat;
 import org.seqdoop.hadoop_bam.SAMRecordWritable;
+import scala.Tuple2;
 
 import java.io.File;
 import java.util.List;
@@ -44,15 +46,16 @@ public final class BamLoading {
 
     public static void main(String[] args) throws Exception {
 
+        /*
         if (args.length < 1) {
             System.err.println("Usage: BamLoading <file>");
             System.exit(1);
-        }
+        }*/
 
         SparkConf sparkConf = new SparkConf().setAppName("BamLoading");
         JavaSparkContext ctx = new JavaSparkContext(sparkConf);
 
-        String bam = args[0];
+        String bam = "src/test/resources/org/broadinstitute/hellbender/tools/BQSR/HiSeq.1mb.1RG.2k_lines.alternate.bam"; //args[0];
 
         final SAMFileHeader readsHeader = getHeader(bam);
         List<SimpleInterval> intervals = IntervalUtils.getAllIntervalsForReference(readsHeader.getSequenceDictionary());
@@ -71,8 +74,32 @@ public final class BamLoading {
         JavaPairRDD<LongWritable, SAMRecordWritable> rdd2 = ctx.newAPIHadoopFile(
                 bam, AnySAMInputFormat.class, LongWritable.class, SAMRecordWritable.class,
                 new Configuration());
-        long count1 = rdd2.count();
+        JavaRDD<GoogleGenomicsReadToGATKReadAdapter> filter = rdd2.map(v1 -> {
+            SAMRecord sam = v1._2().get();
+            if ( samRecordOverlaps(sam, intervals) ) {
+                try {
+                    Read read = ReadUtils.makeRead(sam);
+                    return new GoogleGenomicsReadToGATKReadAdapter(read);
+                } catch (SAMException e) {
+                    /*
+                    if ( stringency == ValidationStringency.STRICT ) {
+                        throw e;
+                    }
+                    else if ( stringency == ValidationStringency.LENIENT ) {
+                        logger.info("getReadsFromHadoopBam: " + e.getMessage());
+                    }*/
+                    // do nothing if silent
+                }
+            }
+            return null;
+
+        }).filter(v1 -> v1 != null);
+        long count1 = filter.count();
+        System.out.println("****************************");
+        System.out.println("****************************");
         System.out.println("counts: " + count + ", " + count1);
+        System.out.println("****************************");
+        System.out.println("****************************");
 
 
         /*
@@ -108,5 +135,21 @@ public final class BamLoading {
 
     private static SAMFileHeader getHeader(String bam) {
         return SamReaderFactory.makeDefault().getFileHeader(new File(bam));
+    }
+
+    /**
+     * Tests if a given SAMRecord overlaps any interval in a collection.
+     */
+    //TODO: remove this method when https://github.com/broadinstitute/hellbender/issues/559 is fixed
+    private static boolean samRecordOverlaps( SAMRecord record, List<SimpleInterval> intervals ) {
+        if (intervals == null || intervals.isEmpty()) {
+            return true;
+        }
+        for (SimpleInterval interval : intervals) {
+            if (interval.overlaps(record)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

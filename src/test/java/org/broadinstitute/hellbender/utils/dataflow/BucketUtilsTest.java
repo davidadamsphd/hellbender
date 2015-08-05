@@ -5,7 +5,7 @@ import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
 import com.google.cloud.genomics.dataflow.utils.GCSOptions;
 import htsjdk.samtools.util.IOUtil;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hdfs.MiniDFSCluster;
+//import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.broadinstitute.hellbender.utils.test.BaseTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -75,6 +75,7 @@ public final class BucketUtilsTest extends BaseTest {
         Assert.assertFalse(BucketUtils.fileExists(intermediate, popts));
     }
 
+    /*
     @Test
     public void testCopyAndDeleteHDFS() throws IOException, GeneralSecurityException {
         final String src = publicTestDir + "empty.vcf";
@@ -99,5 +100,5 @@ public final class BucketUtilsTest extends BaseTest {
                 cluster.shutdown();
             }
         }
-    }
+    }*/
 }

@@ -129,7 +129,7 @@ public final class ReadsDataflowSource {
             PCollection<Read> rawReads = ReadBAMTransform.getReadsFromBAMFilesSharded(pipeline, auth, contigs, new ReaderOptions(stringency, false), ImmutableList.of(bam));
             preads = rawReads.apply(new GoogleGenomicsReadToGATKRead());
         } else if (hadoopUrl) {
-            preads = DataflowUtils.getReadsFromHadoopBam(pipeline, intervals, stringency, bam);
+            preads = null; //DataflowUtils.getReadsFromHadoopBam(pipeline, intervals, stringency, bam);
         } else {
             preads = DataflowUtils.getReadsFromLocalBams(pipeline, intervals, stringency, ImmutableList.of(new File(bam)));
         }

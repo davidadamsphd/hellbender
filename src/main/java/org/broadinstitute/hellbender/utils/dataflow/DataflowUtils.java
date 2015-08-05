@@ -1,6 +1,6 @@
 package org.broadinstitute.hellbender.utils.dataflow;
 
-import com.cloudera.dataflow.hadoop.HadoopIO;
+//import com.cloudera.dataflow.hadoop.HadoopIO;
 import com.google.api.services.genomics.model.Read;
 import com.google.cloud.dataflow.sdk.Pipeline;
 import com.google.cloud.dataflow.sdk.coders.SerializableCoder;
@@ -143,34 +143,25 @@ public final class DataflowUtils {
                 .apply(ParDo.of(new LoadReadsFromFileFn(intervals, stringency)));
     }
 
-    /**
-     * Ingest a BAM file from a Hadoop file system and loads into a
-     * <code>PCollection<Read></code>.
-     * @param pipeline a configured Pipeline
-     * @param intervals intervals to select reads from
-     * @param bam Hadoop file path to read from
-     * @return a <code>PCollection<Read></code> with all the reads that overlap the
-     * given intervals in the BAM file
-     */
+    /*
     @SuppressWarnings("unchecked")
     public static PCollection<GATKRead> getReadsFromHadoopBam(final Pipeline pipeline, final List<SimpleInterval> intervals, final ValidationStringency stringency, final String bam) {
         PCollection<KV<LongWritable, SAMRecordWritable>> input = pipeline.apply(
                 HadoopIO.Read.from(bam, AnySAMInputFormat.class, LongWritable.class, SAMRecordWritable.class));
         return input.apply(ParDo.of(new DoFn<KV<LongWritable, SAMRecordWritable>, GATKRead>() {
             private static final long serialVersionUID = 1L;
+
             @Override
-            public void processElement( ProcessContext c ) throws Exception {
+            public void processElement(ProcessContext c) throws Exception {
                 SAMRecord sam = c.element().getValue().get();
-                if ( samRecordOverlaps(sam, intervals) ) {
+                if (samRecordOverlaps(sam, intervals)) {
                     try {
                         Read read = com.google.cloud.genomics.utils.ReadUtils.makeRead(sam);
                         c.output(new GoogleGenomicsReadToGATKReadAdapter(read));
-                    }
-                    catch ( SAMException e ) {
-                        if ( stringency == ValidationStringency.STRICT ) {
+                    } catch (SAMException e) {
+                        if (stringency == ValidationStringency.STRICT) {
                             throw e;
-                        }
-                        else if ( stringency == ValidationStringency.LENIENT ) {
+                        } else if (stringency == ValidationStringency.LENIENT) {
                             logger.info("getReadsFromHadoopBam: " + e.getMessage());
                         }
                         // do nothing if silent
@@ -178,7 +169,7 @@ public final class DataflowUtils {
                 }
             }
         }));
-    }
+    }*/
 
     /**
      * Tests if a given SAMRecord overlaps any interval in a collection.

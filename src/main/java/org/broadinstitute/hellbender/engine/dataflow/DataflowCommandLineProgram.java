@@ -1,7 +1,7 @@
 package org.broadinstitute.hellbender.engine.dataflow;
 
-import com.cloudera.dataflow.spark.SparkPipelineOptions;
-import com.cloudera.dataflow.spark.SparkPipelineRunner;
+//import com.cloudera.dataflow.spark.SparkPipelineOptions;
+//import com.cloudera.dataflow.spark.SparkPipelineRunner;
 import com.google.cloud.dataflow.sdk.Pipeline;
 import com.google.cloud.dataflow.sdk.PipelineResult;
 import com.google.cloud.dataflow.sdk.options.PipelineOptions;
@@ -28,8 +28,8 @@ public abstract class DataflowCommandLineProgram extends CommandLineProgram impl
     protected enum PipelineRunnerType implements CommandLineParser.ClpEnum {
         LOCAL(DirectPipelineRunner.class, "run the pipeline locally"),
         BLOCKING(BlockingDataflowPipelineRunner.class, "run the pipeline in the cloud, wait and report status"),
-        NONBLOCKING(DataflowPipelineRunner.class, "launch the pipeline in the cloud and don't wait for results"),
-        SPARK(SparkPipelineRunner.class, "run the pipeline on Spark");
+        NONBLOCKING(DataflowPipelineRunner.class, "launch the pipeline in the cloud and don't wait for results")/*,
+        SPARK(SparkPipelineRunner.class, "run the pipeline on Spark")*/;
 
         public final Class<? extends PipelineRunner<? extends PipelineResult>> runner;
         private final String doc;
@@ -80,8 +80,8 @@ public abstract class DataflowCommandLineProgram extends CommandLineProgram impl
             shortName = "numWorkers", fullName = "numWorkers", optional=true)
     protected int numWorkers = 0;
 
-    @Argument(fullName = "sparkMaster", doc="URL of the Spark Master to submit jobs to when using the Spark pipeline runner.", optional = true)
-    protected String sparkMaster;
+    //@Argument(fullName = "sparkMaster", doc="URL of the Spark Master to submit jobs to when using the Spark pipeline runner.", optional = true)
+    //protected String sparkMaster;
 
     @Override
     protected String[] customCommandLineValidation(){
@@ -106,7 +106,6 @@ public abstract class DataflowCommandLineProgram extends CommandLineProgram impl
     }
 
     private PipelineOptions buildPipelineOptions() {
-        if (sparkMaster == null) {
             // We create GCSOptions instead of DataflowPipelineOptions to keep track of the secrets so we can read
             // data from buckets.
             final GCSOptions options = PipelineOptionsFactory.as(GCSOptions.class);
@@ -123,12 +122,6 @@ public abstract class DataflowCommandLineProgram extends CommandLineProgram impl
                 options.setSecretsFile(clientSecret.getAbsolutePath());
             }
             return options;
-        } else {
-            final SparkPipelineOptions options = PipelineOptionsFactory.as(SparkPipelineOptions.class);
-            options.setRunner(this.runnerType.runner);
-            options.setSparkMaster(sparkMaster);
-            return options;
-        }
     }
 
     /**
