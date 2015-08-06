@@ -19,7 +19,8 @@ public class JoinReadsWithVariants {
         String bam = "src/test/resources/org/broadinstitute/hellbender/tools/BQSR/HiSeq.1mb.1RG.2k_lines.alternate.bam";
         String vcf = "src/test/resources/org/broadinstitute/hellbender/tools/BQSR/dbsnp_132.b37.excluding_sites_after_129.chr17_69k_70k.vcf";
 
-        SparkConf sparkConf = new SparkConf().setAppName("JoinReadsWithVariants");
+        SparkConf sparkConf = new SparkConf().setAppName("JoinReadsWithVariants")
+                .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
         JavaSparkContext ctx = new JavaSparkContext(sparkConf);
 
         JavaRDD<GATKRead> reads = BamLoading.getParallelReads(ctx, bam);

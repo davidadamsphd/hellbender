@@ -18,6 +18,7 @@
 package org.broadinstitute.hellbender.tools.spark.examples;
 
 import com.beust.jcommander.internal.Lists;
+import com.esotericsoftware.kryo.Kryo;
 import com.google.api.services.genomics.model.Read;
 import com.google.cloud.genomics.utils.ReadUtils;
 import htsjdk.samtools.*;
@@ -29,10 +30,13 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.broadinstitute.hellbender.engine.ReadsDataSource;
+import org.broadinstitute.hellbender.exceptions.GATKException;
 import org.broadinstitute.hellbender.utils.IntervalUtils;
 import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GoogleGenomicsReadToGATKReadAdapter;
+import org.broadinstitute.hellbender.utils.read.SAMRecordToGATKReadAdapter;
+import org.objenesis.strategy.SerializingInstantiatorStrategy;
 import org.seqdoop.hadoop_bam.AnySAMInputFormat;
 import org.seqdoop.hadoop_bam.SAMRecordWritable;
 import scala.Tuple2;
@@ -54,7 +58,8 @@ public final class BamLoading {
 
         //SparkConf sparkConf = new SparkConf().setAppName("BamLoading");
         SparkConf sparkConf = new SparkConf().setAppName("BamLoading")
-                .setMaster("local[2]").set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
+                .setMaster("local[2]").set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+                .set("spark.kryo.registrator", "org.broadinstitute.hellbender.tools.spark.examples.HellbenderRegistrator");
         JavaSparkContext ctx = new JavaSparkContext(sparkConf);
 
         String bam = "src/test/resources/org/broadinstitute/hellbender/tools/BQSR/HiSeq.1mb.1RG.2k_lines.alternate.bam"; //args[0];
@@ -64,6 +69,15 @@ public final class BamLoading {
         long count = rddReads.count();
         List<GATKRead> collect = rddReads.collect();
 
+        Read read = new Read();
+        read.setId("1");
+        read.setFragmentLength(10);
+        Kryo kryo = new Kryo();
+        kryo.setInstantiatorStrategy(new SerializingInstantiatorStrategy());
+        Read copy = kryo.copy(read);
+
+
+
         JavaRDD<GATKRead> filter = getParallelReads(ctx, bam);
         long count1 = filter.count();
         filter.sample(false, 0.002).map(new Function<GATKRead, String>() {
@@ -72,6 +86,7 @@ public final class BamLoading {
                 return v1.getContig();
             }
         });
+        //List<GATKRead> collect1 = filter.collect();
         System.out.println("****************************");
         System.out.println("****************************");
         System.out.println("counts: " + count + ", " + count1);
@@ -94,6 +109,7 @@ public final class BamLoading {
             records.add(read);
         }
 
+
         return ctx.parallelize(records);
     }
 
@@ -112,6 +128,9 @@ public final class BamLoading {
                 if (samRecordOverlaps(sam, intervals)) {
                     try {
                         Read read = ReadUtils.makeRead(sam);
+                        if (read == null) {
+                            throw new GATKException("null read");
+                        }
                         return new GoogleGenomicsReadToGATKReadAdapter(read);
                     } catch (SAMException e) {
                         // do nothing if silent

@@ -33,12 +33,15 @@ public class JoinReadsAndRefBases {
         String bam = "src/test/resources/org/broadinstitute/hellbender/tools/BQSR/HiSeq.1mb.1RG.2k_lines.alternate.bam";
 
         SparkConf sparkConf = new SparkConf().setAppName("JoinReadsAndRefBases")
-                .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
+                .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+                .set("spark.kryoserializer.buffer.max", "512mb");
+
         JavaSparkContext ctx = new JavaSparkContext(sparkConf);
 
         JavaRDD<GATKRead> reads = BamLoading.getSerialReads(ctx, bam); // switch back to parallel.
         System.out.println("count: " + reads.count());
-        List<GATKRead> collect = reads.collect();
+        JavaRDD<GATKRead> reads2 = reads.sample(false, 0.1);
+        System.out.println("count: " + reads.count());
         /*
         JavaRDD<String> map = reads.map(v1 -> v1.getContig());
         List<String> contigs = map.distinct().collect();
@@ -63,7 +66,7 @@ public class JoinReadsAndRefBases {
         RefAPIMetadata refAPIMetadata = new RefAPIMetadata(referenceName, referenceNameToIdTable);
 
 
-        JavaPairRDD<GATKRead, ReferenceBases> pair = Pair(refAPIMetadata, args[0], reads);
+        JavaPairRDD<GATKRead, ReferenceBases> pair = Pair(refAPIMetadata, args[0], reads2);
         Map<GATKRead, ReferenceBases> readRefBases = pair.collectAsMap();
         for (Map.Entry<GATKRead, ReferenceBases> next : readRefBases.entrySet()) {
             System.out.println(next);
