@@ -5,6 +5,7 @@ import com.google.api.services.genomics.model.ListBasesResponse;
 import com.google.api.services.genomics.model.Reference;
 import com.google.api.services.genomics.model.ReferenceSet;
 import com.google.cloud.dataflow.sdk.options.PipelineOptions;
+import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
 import com.google.cloud.genomics.dataflow.utils.GCSOptions;
 import com.google.cloud.genomics.dataflow.utils.GenomicsOptions;
 import com.google.cloud.genomics.utils.GenomicsFactory;
@@ -93,6 +94,12 @@ public class RefAPISource implements Serializable {
         }
 
         return referenceNameToIdTable;
+    }
+
+    public ReferenceBases getReferenceBases(final String apiKey, final RefAPIMetadata apiData, final SimpleInterval interval) {
+        GCSOptions options = PipelineOptionsFactory.as(GCSOptions.class);
+        options.setApiKey(apiKey);
+        return getReferenceBases(options, apiData, interval);
     }
 
     /**

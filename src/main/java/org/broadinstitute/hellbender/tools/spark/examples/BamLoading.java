@@ -52,11 +52,37 @@ public final class BamLoading {
             System.exit(1);
         }*/
 
-        SparkConf sparkConf = new SparkConf().setAppName("BamLoading");
+        //SparkConf sparkConf = new SparkConf().setAppName("BamLoading");
+        SparkConf sparkConf = new SparkConf().setAppName("BamLoading")
+                .setMaster("local[2]").set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
         JavaSparkContext ctx = new JavaSparkContext(sparkConf);
 
         String bam = "src/test/resources/org/broadinstitute/hellbender/tools/BQSR/HiSeq.1mb.1RG.2k_lines.alternate.bam"; //args[0];
 
+
+        JavaRDD<GATKRead> rddReads = getSerialReads(ctx, bam);
+        long count = rddReads.count();
+        List<GATKRead> collect = rddReads.collect();
+
+        JavaRDD<GATKRead> filter = getParallelReads(ctx, bam);
+        long count1 = filter.count();
+        filter.sample(false, 0.002).map(new Function<GATKRead, String>() {
+            @Override
+            public String call(GATKRead v1) throws Exception {
+                return v1.getContig();
+            }
+        });
+        System.out.println("****************************");
+        System.out.println("****************************");
+        System.out.println("counts: " + count + ", " + count1);
+        System.out.println("****************************");
+        System.out.println("****************************");
+
+
+        ctx.stop();
+    }
+
+    public static JavaRDD<GATKRead> getSerialReads(JavaSparkContext ctx, String bam) {
         final SAMFileHeader readsHeader = getHeader(bam);
         List<SimpleInterval> intervals = IntervalUtils.getAllIntervalsForReference(readsHeader.getSequenceDictionary());
         final SamReaderFactory samReaderFactory = SamReaderFactory.makeDefault().validationStringency(ValidationStringency.SILENT);
@@ -68,69 +94,34 @@ public final class BamLoading {
             records.add(read);
         }
 
-        JavaRDD<GATKRead> rddReads = ctx.parallelize(records);
-        long count = rddReads.count();
+        return ctx.parallelize(records);
+    }
 
+    public static JavaRDD<GATKRead> getParallelReads(JavaSparkContext ctx, String bam) {
         JavaPairRDD<LongWritable, SAMRecordWritable> rdd2 = ctx.newAPIHadoopFile(
                 bam, AnySAMInputFormat.class, LongWritable.class, SAMRecordWritable.class,
                 new Configuration());
-        JavaRDD<GoogleGenomicsReadToGATKReadAdapter> filter = rdd2.map(v1 -> {
-            SAMRecord sam = v1._2().get();
-            if ( samRecordOverlaps(sam, intervals) ) {
-                try {
-                    Read read = ReadUtils.makeRead(sam);
-                    return new GoogleGenomicsReadToGATKReadAdapter(read);
-                } catch (SAMException e) {
-                    /*
-                    if ( stringency == ValidationStringency.STRICT ) {
-                        throw e;
+
+        final SAMFileHeader readsHeader = getHeader(bam);
+        List<SimpleInterval> intervals = IntervalUtils.getAllIntervalsForReference(readsHeader.getSequenceDictionary());
+
+        return rdd2.map(new Function<Tuple2<LongWritable, SAMRecordWritable>, GATKRead>() {
+            @Override
+            public GATKRead call(Tuple2<LongWritable, SAMRecordWritable> v1) throws Exception {
+                SAMRecord sam = v1._2().get();
+                if (samRecordOverlaps(sam, intervals)) {
+                    try {
+                        Read read = ReadUtils.makeRead(sam);
+                        return new GoogleGenomicsReadToGATKReadAdapter(read);
+                    } catch (SAMException e) {
+                        // do nothing if silent
                     }
-                    else if ( stringency == ValidationStringency.LENIENT ) {
-                        logger.info("getReadsFromHadoopBam: " + e.getMessage());
-                    }*/
-                    // do nothing if silent
                 }
-            }
-            return null;
+                return null;
 
+            }
         }).filter(v1 -> v1 != null);
-        long count1 = filter.count();
-        System.out.println("****************************");
-        System.out.println("****************************");
-        System.out.println("counts: " + count + ", " + count1);
-        System.out.println("****************************");
-        System.out.println("****************************");
 
-
-        /*
-        JavaRDD<String> lines = ctx.textFile(args[0], 1);
-        JavaRDD<String> words = lines.flatMap(new FlatMapFunction<String, String>() {
-            @Override
-            public Iterable<String> call(String s) {
-                return Arrays.asList(SPACE.split(s));
-            }
-        });
-
-        JavaPairRDD<String, Integer> ones = words.mapToPair(new PairFunction<String, String, Integer>() {
-            @Override
-            public Tuple2<String, Integer> call(String s) {
-                return new Tuple2<String, Integer>(s, 1);
-            }
-        });
-
-        JavaPairRDD<String, Integer> counts = ones.reduceByKey(new Function2<Integer, Integer, Integer>() {
-            @Override
-            public Integer call(Integer i1, Integer i2) {
-                return i1 + i2;
-            }
-        });
-
-        List<Tuple2<String, Integer>> output = counts.collect();
-        for (Tuple2<?,?> tuple : output) {
-            System.out.println(tuple._1() + ": " + tuple._2());
-        }
-        */
-        ctx.stop();
     }
 
     private static SAMFileHeader getHeader(String bam) {

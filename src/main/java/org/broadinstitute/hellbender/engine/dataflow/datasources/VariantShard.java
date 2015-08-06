@@ -6,6 +6,7 @@ import htsjdk.samtools.util.Locatable;
 import org.broadinstitute.hellbender.utils.Utils;
 import org.broadinstitute.hellbender.utils.variant.Variant;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * variants. The primary use case is pairing reads with overlapping variants.
  * This is class designed to be simple a data-storage class with related static utilities.
  */
-public final class VariantShard {
+public final class VariantShard implements Serializable {
     private final int shardNumber;
     private final String contig;
     public static final int VARIANT_SHARDSIZE = 100000; // This value is subject to change (by humans)

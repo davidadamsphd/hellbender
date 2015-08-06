@@ -18,10 +18,12 @@ import htsjdk.samtools.util.Locatable;
 import htsjdk.samtools.util.StringUtil;
 import org.broadinstitute.hellbender.engine.dataflow.coders.UUIDCoder;
 import org.broadinstitute.hellbender.exceptions.GATKException;
+import org.broadinstitute.hellbender.utils.Utils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -35,7 +37,7 @@ import java.util.UUID;
  * but care must be exercised if the underlying read has been exposed somewhere before
  * wrapping.
  */
-public final class GoogleGenomicsReadToGATKReadAdapter implements GATKRead {
+public final class GoogleGenomicsReadToGATKReadAdapter implements GATKRead, Serializable {
 
     private final Read genomicsRead;
     private final UUID uuid;
@@ -49,6 +51,7 @@ public final class GoogleGenomicsReadToGATKReadAdapter implements GATKRead {
      * for internal use and test class use, which is why it's package protected.
      */
     GoogleGenomicsReadToGATKReadAdapter( final Read genomicsRead, final UUID uuid ) {
+        Utils.nonNull(genomicsRead);
         this.genomicsRead = genomicsRead;
         this.uuid = uuid;
     }
