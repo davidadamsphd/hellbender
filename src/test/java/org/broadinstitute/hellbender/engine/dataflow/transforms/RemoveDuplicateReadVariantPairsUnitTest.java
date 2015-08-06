@@ -102,13 +102,14 @@ public final class RemoveDuplicateReadVariantPairsUnitTest extends BaseTest {
         PCollection<KV<GATKRead, Iterable<Variant>>> pFinalExpected = p.apply(Create.of(finalExpected).withCoder(KvCoder.of(new GATKReadCoder(), IterableCoder.of(new VariantCoder()))));
         DataflowTestUtils.keyIterableValueMatcher(finalResult, pFinalExpected);
 
+        /*
         Read read = new Read();
         read.setId("1");
         read.setFragmentLength(10);
         Kryo kryo = new Kryo();
         kryo.setInstantiatorStrategy(new SerializingInstantiatorStrategy());
         Read copy = kryo.copy(read);
-
+        */
         p.run();
     }
 
