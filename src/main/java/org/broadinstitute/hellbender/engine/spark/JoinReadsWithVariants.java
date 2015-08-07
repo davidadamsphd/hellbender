@@ -17,27 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 public class JoinReadsWithVariants {
-    public static void main(String[] args) throws Exception {
-        String bam = "src/test/resources/org/broadinstitute/hellbender/tools/BQSR/HiSeq.1mb.1RG.2k_lines.alternate.bam";
-        String vcf = "src/test/resources/org/broadinstitute/hellbender/tools/BQSR/dbsnp_132.b37.excluding_sites_after_129.chr17_69k_70k.vcf";
 
-        SparkConf sparkConf = new SparkConf().setAppName("LoadVariants")
-                .setMaster("local[2]").set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-                .set("spark.kryo.registrator", "org.broadinstitute.hellbender.engine.spark.GATKRegistrator");
-
-        JavaSparkContext ctx = new JavaSparkContext(sparkConf);
-
-        ReadsSparkSource readSource = new ReadsSparkSource(ctx);
-        JavaRDD<GATKRead> reads = readSource.getParallelReads(bam);
-        VariantsSparkSource variantsSparkSource = new VariantsSparkSource(ctx);
-        JavaRDD<Variant> variants = variantsSparkSource.getParallelVariants(vcf);
-
-        JavaPairRDD<GATKRead, Iterable<Variant>> readsiVariants = JoinGATKReadsAndVariants(reads, variants);
-        Map<GATKRead, Iterable<Variant>> map = readsiVariants.collectAsMap();
-        ctx.stop();
-    }
-
-    public static JavaPairRDD<GATKRead, Iterable<Variant>> JoinGATKReadsAndVariants(
+    public static JavaPairRDD<GATKRead, Iterable<Variant>> Join(
             JavaRDD<GATKRead> reads, JavaRDD<Variant> variants) {
 
         JavaPairRDD<VariantShard, GATKRead> readsWShards = reads.flatMapToPair(gatkRead -> {
@@ -61,8 +42,8 @@ public class JoinReadsWithVariants {
         JavaPairRDD<VariantShard, Tuple2<Iterable<GATKRead>, Iterable<Variant>>> cogroup = readsWShards.cogroup(variantsWShards);
 
         JavaPairRDD<GATKRead, Variant> allPairs = cogroup.flatMapToPair(cogroupValue -> {
-            Iterable<GATKRead> iReads = cogroupValue._2._1();
-            Iterable<Variant> iVariants = cogroupValue._2._2();
+            Iterable<GATKRead> iReads = cogroupValue._2()._1();
+            Iterable<Variant> iVariants = cogroupValue._2()._2();
 
             List<Tuple2<GATKRead, Variant>> out = Lists.newArrayList();
             // For every read, find every overlapping variant.

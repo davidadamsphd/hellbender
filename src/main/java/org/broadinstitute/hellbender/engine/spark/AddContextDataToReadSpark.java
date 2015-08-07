@@ -56,7 +56,7 @@ public class AddContextDataToReadSpark {
     public static JavaPairRDD<GATKRead, ReadContextData> JoinContextData(
             JavaRDD<GATKRead> reads, RefAPIMetadata refAPIMetadata, JavaRDD<Variant> variants) {
         // Join Reads and Variants, Reads and ReferenceBases
-        JavaPairRDD<GATKRead, Iterable<Variant>> readiVariants = JoinReadsWithVariants.JoinGATKReadsAndVariants(reads, variants);
+        JavaPairRDD<GATKRead, Iterable<Variant>> readiVariants = JoinReadsWithVariants.Join(reads, variants);
         JavaPairRDD<GATKRead, ReferenceBases> readRefBases = JoinReadsWithRefBases.Pair(refAPIMetadata, reads);
 
         //boolean assertsEnabled = false;

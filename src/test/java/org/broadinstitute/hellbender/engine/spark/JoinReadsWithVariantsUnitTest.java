@@ -10,6 +10,8 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.broadinstitute.hellbender.engine.dataflow.ReadsPreprocessingPipelineTestData;
+import org.broadinstitute.hellbender.engine.spark.datasources.ReadsSparkSource;
+import org.broadinstitute.hellbender.engine.spark.datasources.VariantsSparkSource;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.test.BaseTest;
 import org.broadinstitute.hellbender.utils.variant.Variant;
@@ -44,7 +46,7 @@ public class JoinReadsWithVariantsUnitTest extends BaseTest {
 
         JavaRDD<GATKRead> rddReads = ctx.parallelize(reads);
         JavaRDD<Variant> rddVariants = ctx.parallelize(variantList);
-        JavaPairRDD<GATKRead, Iterable<Variant>> actual = JoinReadsWithVariants.JoinGATKReadsAndVariants(rddReads, rddVariants);
+        JavaPairRDD<GATKRead, Iterable<Variant>> actual = JoinReadsWithVariants.Join(rddReads, rddVariants);
         Map<GATKRead, Iterable<Variant>> gatkReadIterableMap = actual.collectAsMap();
 
         for (KV<GATKRead, Iterable<Variant>> kv: kvReadiVariant) {
@@ -56,6 +58,26 @@ public class JoinReadsWithVariantsUnitTest extends BaseTest {
         }
         ctx.close();
 
+    }
+    @Test
+    public void readFromFileTest() {
+        String bam = "src/test/resources/org/broadinstitute/hellbender/tools/BQSR/HiSeq.1mb.1RG.2k_lines.alternate.bam";
+        String vcf = "src/test/resources/org/broadinstitute/hellbender/tools/BQSR/dbsnp_132.b37.excluding_sites_after_129.chr17_69k_70k.vcf";
+
+        SparkConf sparkConf = new SparkConf().setAppName("LoadVariants")
+                .setMaster("local[2]").set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+                .set("spark.kryo.registrator", "org.broadinstitute.hellbender.engine.spark.GATKRegistrator");
+
+        JavaSparkContext ctx = new JavaSparkContext(sparkConf);
+
+        ReadsSparkSource readSource = new ReadsSparkSource(ctx);
+        JavaRDD<GATKRead> reads = readSource.getParallelReads(bam);
+        VariantsSparkSource variantsSparkSource = new VariantsSparkSource(ctx);
+        JavaRDD<Variant> variants = variantsSparkSource.getParallelVariants(vcf);
+
+        JavaPairRDD<GATKRead, Iterable<Variant>> readsiVariants = JoinReadsWithVariants.Join(reads, variants);
+        Map<GATKRead, Iterable<Variant>> map = readsiVariants.collectAsMap();
+        ctx.stop();
     }
 
 }

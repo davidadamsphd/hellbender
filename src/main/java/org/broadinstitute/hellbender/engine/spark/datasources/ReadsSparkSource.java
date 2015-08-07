@@ -41,13 +41,10 @@ public class ReadsSparkSource {
         return ctx.parallelize(records);
     }
 
-    public JavaRDD<GATKRead> getParallelReads(String bam) {
+    public JavaRDD<GATKRead> getParallelReads(String bam, List<SimpleInterval> intervals) {
         JavaPairRDD<LongWritable, SAMRecordWritable> rdd2 = ctx.newAPIHadoopFile(
                 bam, AnySAMInputFormat.class, LongWritable.class, SAMRecordWritable.class,
                 new Configuration());
-
-        final SAMFileHeader readsHeader = getHeader(bam);
-        List<SimpleInterval> intervals = IntervalUtils.getAllIntervalsForReference(readsHeader.getSequenceDictionary());
 
         return rdd2.map(v1 -> {
             SAMRecord sam = v1._2().get();
@@ -67,7 +64,13 @@ public class ReadsSparkSource {
         }).filter(v1 -> v1 != null);
     }
 
-    private static SAMFileHeader getHeader(String bam) {
+    public JavaRDD<GATKRead> getParallelReads(String bam) {
+        final SAMFileHeader readsHeader = getHeader(bam);
+        List<SimpleInterval> intervals = IntervalUtils.getAllIntervalsForReference(readsHeader.getSequenceDictionary());
+        return getParallelReads(bam, intervals);
+    }
+
+    public SAMFileHeader getHeader(String bam) {
         return SamReaderFactory.makeDefault().getFileHeader(new File(bam));
     }
 
