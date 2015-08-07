@@ -30,7 +30,7 @@ public class JoinReadsWithVariants {
 
         JavaPairRDD<GATKRead, Iterable<Variant>> readsiVariants = JoinGATKReadsAndVariants(reads, variants);
         Map<GATKRead, Iterable<Variant>> map = readsiVariants.collectAsMap();
-
+        ctx.stop();
     }
 
     public static JavaPairRDD<GATKRead, Iterable<Variant>> JoinGATKReadsAndVariants(
