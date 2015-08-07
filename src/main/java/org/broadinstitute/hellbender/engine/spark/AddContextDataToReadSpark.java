@@ -9,14 +9,13 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.broadinstitute.hellbender.engine.dataflow.datasources.ReadContextData;
 import org.broadinstitute.hellbender.engine.dataflow.datasources.RefAPIMetadata;
-import org.broadinstitute.hellbender.exceptions.GATKException;
+import org.broadinstitute.hellbender.engine.spark.datasources.ReadsSparkSource;
+import org.broadinstitute.hellbender.engine.spark.datasources.VariantsSparkSource;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.reference.ReferenceBases;
 import org.broadinstitute.hellbender.utils.variant.Variant;
 import scala.Tuple2;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +34,8 @@ public class AddContextDataToReadSpark {
 
         JavaSparkContext ctx = new JavaSparkContext(sparkConf);
 
-        JavaRDD<GATKRead> reads = LoadReads.getParallelReads(ctx, bam); // switch back to parallel.
+        ReadsSparkSource readSouce = new ReadsSparkSource(ctx);
+        JavaRDD<GATKRead> reads = readSouce.getParallelReads(bam);
 
         String referenceName = "EOSt9JOVhp3jkwE";
         Map<String, String> referenceNameToIdTable = Maps.newHashMap();
@@ -43,7 +43,8 @@ public class AddContextDataToReadSpark {
 
         RefAPIMetadata refAPIMetadata = new RefAPIMetadata(referenceName, referenceNameToIdTable, args[0]);
 
-        JavaRDD<Variant> variants = LoadVariants.getParallelVariants(ctx, vcf);
+        VariantsSparkSource variantsSparkSource = new VariantsSparkSource(ctx);
+        JavaRDD<Variant> variants = variantsSparkSource.getParallelVariants(vcf);
         JavaPairRDD<GATKRead, ReadContextData> readContextData = JoinContextData(reads, refAPIMetadata, variants);
         Map<GATKRead, ReadContextData> out = readContextData.collectAsMap();
         for (Map.Entry<GATKRead, ReadContextData> next : out.entrySet()) {

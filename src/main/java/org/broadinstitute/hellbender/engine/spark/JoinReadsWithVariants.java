@@ -6,6 +6,8 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.broadinstitute.hellbender.engine.dataflow.datasources.VariantShard;
+import org.broadinstitute.hellbender.engine.spark.datasources.ReadsSparkSource;
+import org.broadinstitute.hellbender.engine.spark.datasources.VariantsSparkSource;
 import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.variant.Variant;
@@ -25,8 +27,10 @@ public class JoinReadsWithVariants {
 
         JavaSparkContext ctx = new JavaSparkContext(sparkConf);
 
-        JavaRDD<GATKRead> reads = LoadReads.getParallelReads(ctx, bam);
-        JavaRDD<Variant> variants = LoadVariants.getParallelVariants(ctx, vcf);
+        ReadsSparkSource readSource = new ReadsSparkSource(ctx);
+        JavaRDD<GATKRead> reads = readSource.getParallelReads(bam);
+        VariantsSparkSource variantsSparkSource = new VariantsSparkSource(ctx);
+        JavaRDD<Variant> variants = variantsSparkSource.getParallelVariants(vcf);
 
         JavaPairRDD<GATKRead, Iterable<Variant>> readsiVariants = JoinGATKReadsAndVariants(reads, variants);
         Map<GATKRead, Iterable<Variant>> map = readsiVariants.collectAsMap();

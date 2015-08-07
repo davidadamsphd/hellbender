@@ -9,6 +9,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.broadinstitute.hellbender.engine.dataflow.datasources.RefAPIMetadata;
 import org.broadinstitute.hellbender.engine.dataflow.datasources.RefAPISource;
 import org.broadinstitute.hellbender.engine.dataflow.datasources.ReferenceShard;
+import org.broadinstitute.hellbender.engine.spark.datasources.ReadsSparkSource;
 import org.broadinstitute.hellbender.utils.SimpleInterval;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.reference.ReferenceBases;
@@ -32,7 +33,8 @@ public class JoinReadsWithRefBases {
 
         JavaSparkContext ctx = new JavaSparkContext(sparkConf);
 
-        JavaRDD<GATKRead> reads = LoadReads.getParallelReads(ctx, bam); // switch back to parallel.
+        ReadsSparkSource readSource = new ReadsSparkSource(ctx);
+        JavaRDD<GATKRead> reads = readSource.getParallelReads(bam);
 
         String referenceName = "EOSt9JOVhp3jkwE";
         Map<String, String> referenceNameToIdTable = Maps.newHashMap();
