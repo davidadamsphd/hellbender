@@ -19,7 +19,7 @@ import org.testng.annotations.Test;
 
 import java.util.*;
 
-public class JoinReadsWithVariantsTest extends BaseTest {
+public class JoinReadsWithVariantsUnitTest extends BaseTest {
     @DataProvider(name = "pairedReadsAndVariants")
     public Object[][] pairedReadsAndVariants(){
         Object[][] data = new Object[2][];

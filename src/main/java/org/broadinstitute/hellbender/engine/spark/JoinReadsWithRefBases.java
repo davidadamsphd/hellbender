@@ -38,10 +38,10 @@ public class JoinReadsWithRefBases {
         Map<String, String> referenceNameToIdTable = Maps.newHashMap();
         referenceNameToIdTable.put("chr1", "EIaSo62VtfXT4AE");
 
-        RefAPIMetadata refAPIMetadata = new RefAPIMetadata(referenceName, referenceNameToIdTable);
+        RefAPIMetadata refAPIMetadata = new RefAPIMetadata(referenceName, referenceNameToIdTable, args[0]);
 
 
-        JavaPairRDD<GATKRead, ReferenceBases> pair = Pair(refAPIMetadata, args[0], reads);
+        JavaPairRDD<GATKRead, ReferenceBases> pair = Pair(refAPIMetadata, reads);
         Map<GATKRead, ReferenceBases> readRefBases = pair.collectAsMap();
         for (Map.Entry<GATKRead, ReferenceBases> next : readRefBases.entrySet()) {
             System.out.println(new String(next.getValue().getBases()));
@@ -50,7 +50,6 @@ public class JoinReadsWithRefBases {
     }
 
     public static JavaPairRDD<GATKRead, ReferenceBases> Pair(RefAPIMetadata refAPIMetadata,
-                                                             String apiKey,
                                                              JavaRDD<GATKRead> reads) {
 
         JavaPairRDD<ReferenceShard, GATKRead> shardRead = reads.mapToPair(gatkRead -> {
@@ -65,7 +64,7 @@ public class JoinReadsWithRefBases {
             Iterable<GATKRead> reads1 = in._2();
             SimpleInterval interval = SimpleInterval.getSpanningInterval(reads1);
             RefAPISource refAPISource = RefAPISource.getRefAPISource();
-            ReferenceBases bases = refAPISource.getReferenceBases(apiKey, refAPIMetadata, interval);
+            ReferenceBases bases = refAPISource.getReferenceBases(refAPIMetadata.getApiKey(), refAPIMetadata, interval);
             for (GATKRead r : reads1) {
                 final ReferenceBases subset = bases.getSubset(new SimpleInterval(r));
                 out.add(new Tuple2<>(r, subset));

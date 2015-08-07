@@ -10,14 +10,20 @@ import java.util.Map;
  */
 public class RefAPIMetadata implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    public RefAPIMetadata(String referenceName, Map<String, String> referenceNameToIdTable) {
-        this.referenceName = referenceName;
-        this.referenceNameToIdTable = Collections.unmodifiableMap(referenceNameToIdTable);
-    }
-
     private final String referenceName;
     private final Map<String, String> referenceNameToIdTable;
+    private final String apiKey;
+
+    public RefAPIMetadata(String referenceName, Map<String, String> referenceNameToIdTable, String apiKey) {
+        this.referenceName = referenceName;
+        this.referenceNameToIdTable = Collections.unmodifiableMap(referenceNameToIdTable);
+        this.apiKey = apiKey;
+
+    }
+    public RefAPIMetadata(String referenceName, Map<String, String> referenceNameToIdTable) {
+        this(referenceName, referenceNameToIdTable, null);
+    }
+
 
     public String getReferenceName() {
         return referenceName;
@@ -25,5 +31,9 @@ public class RefAPIMetadata implements Serializable {
 
     public Map<String, String> getReferenceNameToIdTable() {
         return referenceNameToIdTable;
+    }
+
+    public String getApiKey() {
+        return apiKey;
     }
 }
