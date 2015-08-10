@@ -1,14 +1,9 @@
 package org.broadinstitute.hellbender.tools.spark.pipelines;
 
-import com.google.cloud.dataflow.sdk.Pipeline;
-import com.google.cloud.dataflow.sdk.coders.SerializableCoder;
-import com.google.cloud.dataflow.sdk.transforms.*;
-import com.google.cloud.dataflow.sdk.values.KV;
-import com.google.cloud.dataflow.sdk.values.PCollection;
-import com.google.cloud.dataflow.sdk.values.PCollectionView;
+import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
+import com.google.cloud.genomics.dataflow.utils.GCSOptions;
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMSequenceDictionary;
-import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
@@ -19,26 +14,22 @@ import org.broadinstitute.hellbender.cmdline.StandardArgumentDefinitions;
 import org.broadinstitute.hellbender.cmdline.argumentcollections.IntervalArgumentCollection;
 import org.broadinstitute.hellbender.cmdline.argumentcollections.OptionalIntervalArgumentCollection;
 import org.broadinstitute.hellbender.cmdline.programgroups.DataFlowProgramGroup;
-import org.broadinstitute.hellbender.dev.DoFnWLog;
-import org.broadinstitute.hellbender.engine.dataflow.*;
-import org.broadinstitute.hellbender.engine.dataflow.datasources.*;
-import org.broadinstitute.hellbender.engine.dataflow.transforms.composite.AddContextDataToRead;
+import org.broadinstitute.hellbender.engine.dataflow.datasources.ReadContextData;
+import org.broadinstitute.hellbender.engine.dataflow.datasources.RefAPIMetadata;
+import org.broadinstitute.hellbender.engine.dataflow.datasources.RefAPISource;
+import org.broadinstitute.hellbender.engine.spark.AddContextDataToReadSpark;
+import org.broadinstitute.hellbender.engine.spark.SparkCommandLineProgram;
+import org.broadinstitute.hellbender.engine.spark.datasources.ReadsSparkSink;
 import org.broadinstitute.hellbender.engine.spark.datasources.ReadsSparkSource;
-import org.broadinstitute.hellbender.tools.dataflow.transforms.markduplicates.MarkDuplicates;
-import org.broadinstitute.hellbender.tools.recalibration.RecalibrationArgumentCollection;
-import org.broadinstitute.hellbender.tools.recalibration.RecalibrationTables;
-import org.broadinstitute.hellbender.tools.recalibration.covariates.StandardCovariateList;
-import org.broadinstitute.hellbender.utils.GenomeLocSortedSet;
+import org.broadinstitute.hellbender.engine.spark.datasources.VariantsSparkSource;
 import org.broadinstitute.hellbender.utils.IntervalUtils;
 import org.broadinstitute.hellbender.utils.SimpleInterval;
-import org.broadinstitute.hellbender.utils.dataflow.SmallBamWriter;
 import org.broadinstitute.hellbender.utils.read.GATKRead;
+import org.broadinstitute.hellbender.utils.variant.Variant;
+import scala.Tuple2;
 
-import java.sql.Ref;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 
 @CommandLineProgramProperties(
@@ -52,7 +43,7 @@ import java.util.stream.Collectors;
  * ReadsPreprocessingPipeline is our standard pipeline that takes aligned reads (likely from BWA) and runs MarkDuplicates
  * and BQSR. The final result is analysis-ready reads.
  */
-public class ReadsPipelineSpark extends DataflowCommandLineProgram {
+public class ReadsPipelineSpark extends SparkCommandLineProgram {
     private static final long serialVersionUID = 1L;
 
     @Argument(doc = "uri for the input bam, either a local file path or a gs:// bucket path",
@@ -75,13 +66,7 @@ public class ReadsPipelineSpark extends DataflowCommandLineProgram {
     protected IntervalArgumentCollection intervalArgumentCollection = new OptionalIntervalArgumentCollection();
 
     @Override
-    protected void setupPipeline( Pipeline pipeline ) {
-        SparkConf sparkConf = new SparkConf().setAppName("LoadVariants")
-                .setMaster("local[2]").set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-                .set("spark.kryo.registrator", "org.broadinstitute.hellbender.engine.spark.GATKRegistrator");
-
-        JavaSparkContext ctx = new JavaSparkContext(sparkConf);
-
+    protected void runPipeline(final JavaSparkContext ctx) {
         ReadsSparkSource readSource = new ReadsSparkSource(ctx);
         SAMFileHeader readsHeader = readSource.getHeader(bam);
         final List<SimpleInterval> intervals = intervalArgumentCollection.intervalsSpecified() ? intervalArgumentCollection.getIntervals(readsHeader.getSequenceDictionary())
@@ -89,44 +74,24 @@ public class ReadsPipelineSpark extends DataflowCommandLineProgram {
         JavaRDD<GATKRead> initialReads = readSource.getParallelReads(bam, intervals);
 
         JavaRDD<GATKRead> markedReads = initialReads.map(new MarkDuplicatesStub());
+        VariantsSparkSource variantsSparkSource = new VariantsSparkSource(ctx);
+        JavaRDD<Variant> variants = variantsSparkSource.getParallelVariants(baseRecalibrationKnownVariants);
 
-        
-        // Load the Variants and the Reference and join them to reads.
-        final VariantsDataflowSource variantsDataflowSource = new VariantsDataflowSource(baseRecalibrationKnownVariants, pipeline);
+        GCSOptions options = PipelineOptionsFactory.as(GCSOptions.class);
+        options.setApiKey(apiKey);
+        Map<String, String> referenceNameToIdTable = RefAPISource.buildReferenceNameToIdTable(options, referenceName);
+        RefAPIMetadata refAPIMetadata = new RefAPIMetadata(referenceName, referenceNameToIdTable, "apiKey");
 
-        Map<String, String> referenceNameToIdTable = RefAPISource.buildReferenceNameToIdTable(pipeline.getOptions(), referenceName);
-        RefAPIMetadata refAPIMetadata = new RefAPIMetadata(referenceName, referenceNameToIdTable);
+        JavaPairRDD<GATKRead, ReadContextData> rddReadContext = AddContextDataToReadSpark.JoinContextData(markedReads, refAPIMetadata, variants);
 
-        final PCollection<KV<GATKRead, ReadContextData>> readsWithContext = AddContextDataToRead.add(markedReads, refAPIMetadata, variantsDataflowSource);
+        JavaRDD<GATKRead> finalReads = rddReadContext.map(new ApplyBQSRStub());
 
-        // Apply BQSR.
-        final PCollection<RecalibrationTables> recalibrationReports = readsWithContext.apply(new BaseRecalibratorStub(headerSingleton));
-        final PCollectionView<RecalibrationTables> mergedRecalibrationReport = recalibrationReports.apply(View.<RecalibrationTables>asSingleton());
-
-        final PCollection<GATKRead> finalReads = markedReads.apply(new ApplyBQSRStub(headerSingleton, mergedRecalibrationReport));
-        SmallBamWriter.writeToFile(pipeline, finalReads, readsHeader, output);
+        ReadsSparkSink.writeParallelReads(output, finalReads, readsHeader);
     }
 
-    private static class BaseRecalibratorStub extends PTransform<PCollection<KV<GATKRead, ReadContextData>>, PCollection<RecalibrationTables>> {
-        private static final long serialVersionUID = 1L;
-        private PCollectionView<SAMFileHeader> header;
-
-        public BaseRecalibratorStub( final PCollectionView<SAMFileHeader> header ) {
-            this.header = header;
-        }
-
-        @Override
-        public PCollection<RecalibrationTables> apply( PCollection<KV<GATKRead, ReadContextData>> input ) {
-            return input.apply(ParDo.named("BaseRecalibrator").
-                    of(new DoFnWLog<KV<GATKRead, ReadContextData>, RecalibrationTables>("BaseRecalibratorStub") {
-                        private static final long serialVersionUID = 1L;
-
-                        @Override
-                        public void processElement( ProcessContext c ) throws Exception {
-                            c.output(new RecalibrationTables(new StandardCovariateList(new RecalibrationArgumentCollection(), Collections.emptyList())));
-                        }
-                    }).withSideInputs(header));
-        }
+    @Override
+    protected String getProgramName() {
+        return "ReadsPipelineSpark";
     }
 
     private static class MarkDuplicatesStub implements Function<GATKRead, GATKRead> {
@@ -135,29 +100,12 @@ public class ReadsPipelineSpark extends DataflowCommandLineProgram {
             return v1;
         }
     }
-    private static class ApplyBQSRStub extends PTransform<PCollection<GATKRead>, PCollection<GATKRead>> {
-        private static final long serialVersionUID = 1L;
-        private PCollectionView<SAMFileHeader> header;
-        private PCollectionView<RecalibrationTables> recalibrationReport;
 
-        public ApplyBQSRStub( final PCollectionView<SAMFileHeader> header, final PCollectionView<RecalibrationTables> recalibrationReport ) {
-            this.header = header;
-            this.recalibrationReport = recalibrationReport;
-        }
-
+    private static class ApplyBQSRStub implements Function<Tuple2<GATKRead,ReadContextData>, GATKRead> {
         @Override
-        public PCollection<GATKRead> apply( PCollection<GATKRead> input ) {
-            return input.apply(ParDo.named("ApplyBQSR").
-                    of(new DoFnWLog<GATKRead, GATKRead>("ApplyBQSRStub") {
-                        private static final long serialVersionUID = 1L;
-
-                        @Override
-                        public void processElement( ProcessContext c ) throws Exception {
-                            c.output(c.element());
-                        }
-                    }).withSideInputs(header, recalibrationReport));
+        public GATKRead call(Tuple2<GATKRead, ReadContextData> v1) throws Exception {
+            return v1._1();
         }
     }
-
 }
 

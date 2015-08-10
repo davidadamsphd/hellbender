@@ -17,6 +17,7 @@ import org.broadinstitute.hellbender.utils.read.GATKRead;
 import org.broadinstitute.hellbender.utils.read.GoogleGenomicsReadToGATKReadAdapter;
 import org.seqdoop.hadoop_bam.AnySAMInputFormat;
 import org.seqdoop.hadoop_bam.SAMRecordWritable;
+import scala.Tuple2;
 
 import java.io.File;
 import java.util.List;
@@ -47,6 +48,7 @@ public class ReadsSparkSource {
                 new Configuration());
 
         return rdd2.map(v1 -> {
+            v1._2();
             SAMRecord sam = v1._2().get();
             if (samRecordOverlaps(sam, intervals)) {
                 try {

@@ -49,6 +49,7 @@ public class JoinReadsWithVariantsUnitTest extends BaseTest {
         JavaPairRDD<GATKRead, Iterable<Variant>> actual = JoinReadsWithVariants.Join(rddReads, rddVariants);
         Map<GATKRead, Iterable<Variant>> gatkReadIterableMap = actual.collectAsMap();
 
+        Assert.assertEquals(gatkReadIterableMap.size(), kvReadiVariant.size());
         for (KV<GATKRead, Iterable<Variant>> kv: kvReadiVariant) {
             List<Variant> variants = Lists.newArrayList(gatkReadIterableMap.get(kv.getKey()));
             Assert.assertTrue(!variants.isEmpty());
@@ -57,8 +58,8 @@ public class JoinReadsWithVariantsUnitTest extends BaseTest {
             Assert.assertEquals(hashVariants, expectedHashVariants);
         }
         ctx.close();
-
     }
+
     @Test
     public void readFromFileTest() {
         String bam = "src/test/resources/org/broadinstitute/hellbender/tools/BQSR/HiSeq.1mb.1RG.2k_lines.alternate.bam";

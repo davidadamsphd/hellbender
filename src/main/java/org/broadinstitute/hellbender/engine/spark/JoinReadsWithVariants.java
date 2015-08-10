@@ -54,6 +54,7 @@ public class JoinReadsWithVariants {
                         out.add(new Tuple2<>(r, v));
                     }
                 }
+                // TODO: Check if any variants are found, if not output read with no variants
             }
             return out;
         });

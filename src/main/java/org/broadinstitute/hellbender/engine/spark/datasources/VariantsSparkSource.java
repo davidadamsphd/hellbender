@@ -37,6 +37,15 @@ public final class VariantsSparkSource {
         return ctx.parallelize(records);
     }
 
+    public JavaRDD<Variant> getParallelVariants(List<String> vcfs) {
+        JavaRDD<Variant> rddVariants = ctx.emptyRDD();
+        for (String vcf : vcfs) {
+            JavaRDD<Variant> variants = getParallelVariants(vcf);
+            rddVariants.union(variants);
+        }
+        return rddVariants;
+    }
+
     public JavaRDD<Variant> getParallelVariants(String vcf) {
         JavaPairRDD<LongWritable, VariantContextWritable> rdd2 = ctx.newAPIHadoopFile(
                 vcf, VCFInputFormat.class, LongWritable.class, VariantContextWritable.class,
